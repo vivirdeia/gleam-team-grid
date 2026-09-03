@@ -1,16 +1,71 @@
-import { Sparkles, Star } from "lucide-react";
+import { Star } from "lucide-react";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import type { EstadoFactura, EstadoServicio, Frecuencia, TipoEspacio } from "@/lib/nitidia/types";
 
-export function Logo({ className }: { className?: string }) {
+/**
+ * Marca Nitidia: monograma geométrico propio.
+ * Una "N" construida con dos pilares y una diagonal que se convierte en gota,
+ * dentro de un contenedor de esquinas suaves con destello diagonal.
+ */
+export function Isotipo({ className }: { className?: string }) {
   return (
-    <span className={cn("inline-flex items-center gap-2", className)}>
-      <span className="fondo-suave flex size-9 items-center justify-center rounded-xl text-accent-foreground">
-        <Sparkles className="size-5" />
-      </span>
-      <span className="font-display text-xl font-semibold tracking-tight text-foreground">
-        Nitidia
+    <svg
+      viewBox="0 0 40 40"
+      role="img"
+      aria-label="Nitidia"
+      className={cn("size-9", className)}
+    >
+      <defs>
+        <linearGradient id="nitidia-marca" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="oklch(0.66 0.105 214)" />
+          <stop offset="100%" stopColor="oklch(0.7 0.115 172)" />
+        </linearGradient>
+        <linearGradient id="nitidia-brillo" x1="0" y1="1" x2="1" y2="0">
+          <stop offset="0%" stopColor="oklch(1 0 0 / 0)" />
+          <stop offset="55%" stopColor="oklch(1 0 0 / 0.45)" />
+          <stop offset="100%" stopColor="oklch(1 0 0 / 0)" />
+        </linearGradient>
+      </defs>
+      <rect x="0" y="0" width="40" height="40" rx="13" fill="url(#nitidia-marca)" />
+      <path d="M2 30 L30 2 L40 2 L2 40 Z" fill="url(#nitidia-brillo)" />
+      {/* Monograma N */}
+      <rect x="11" y="10" width="3.6" height="20" rx="1.8" fill="oklch(1 0 0)" />
+      <rect x="25.4" y="10" width="3.6" height="20" rx="1.8" fill="oklch(1 0 0 / 0.72)" />
+      <path
+        d="M12.8 11.2 L27.2 26.4 L27.2 30 L24.6 30 L11 15.4 L11 11.2 Z"
+        fill="oklch(1 0 0)"
+      />
+      {/* Gota de brillo */}
+      <path
+        d="M30.8 27.2c1.5 1.6 2.4 2.7 2.4 3.8a2.4 2.4 0 1 1-4.8 0c0-1.1.9-2.2 2.4-3.8Z"
+        fill="oklch(1 0 0 / 0.9)"
+      />
+    </svg>
+  );
+}
+
+export function Logo({
+  className,
+  tamano = "md",
+}: {
+  className?: string;
+  tamano?: "sm" | "md" | "lg";
+}) {
+  const marca = { sm: "size-7", md: "size-9", lg: "size-11" }[tamano];
+  const texto = { sm: "text-base", md: "text-xl", lg: "text-2xl" }[tamano];
+  return (
+    <span className={cn("group inline-flex items-center gap-2.5", className)}>
+      <Isotipo
+        className={cn(marca, "transition-transform duration-500 group-hover:rotate-[-6deg]")}
+      />
+      <span
+        className={cn(
+          "font-display font-semibold tracking-[-0.03em] text-foreground",
+          texto,
+        )}
+      >
+        Nitid<span className="text-primary">i</span>a
       </span>
     </span>
   );
