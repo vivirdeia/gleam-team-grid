@@ -74,6 +74,13 @@ function Clientes() {
       toast.error("Indica al menos nombre y dirección");
       return;
     }
+    if (db.clientes.length >= limitePlan) {
+      toast.error(
+        `Has alcanzado el límite de tu plan ${plan.etiqueta}: ${limitePlan} clientes. Mejora de plan para añadir más.`,
+      );
+      return;
+    }
+
     const cliente: Cliente = {
       id: nuevoId("cl"),
       tenantId: db.empresa.id,
