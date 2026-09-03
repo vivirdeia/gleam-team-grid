@@ -56,6 +56,12 @@ function Login() {
   function entrarEmpresa(e: React.FormEvent) {
     e.preventDefault();
     if (!empresa) return;
+    if (!empresa.activo) {
+      toast.error(
+        `${empresa.nombre} tiene la cuenta desactivada. Contacta con el equipo de Nitidia para reactivarla.`,
+      );
+      return;
+    }
     if (perfil === "admin") {
       const esperado = empresa.pinAdmin ?? "0000";
       if (pin.trim() !== esperado) {
@@ -187,9 +193,13 @@ function Login() {
                         <span className="block font-medium">{e.nombre}</span>
                         <span className="block text-xs text-muted-foreground">{e.emailContacto}</span>
                       </span>
-                      <Pill tono={e.plan === "pro" ? "verde" : e.plan === "starter" ? "azul" : "ambar"}>
-                        {PLANES[e.plan].etiqueta}
-                      </Pill>
+                      {e.activo ? (
+                        <Pill tono={e.plan === "pro" ? "verde" : e.plan === "starter" ? "azul" : "ambar"}>
+                          {PLANES[e.plan].etiqueta}
+                        </Pill>
+                      ) : (
+                        <Pill tono="rojo">Cuenta inactiva</Pill>
+                      )}
                     </button>
                   ))}
                 </div>
