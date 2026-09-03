@@ -20,6 +20,7 @@ import { Route as AppFacturacionRouteImport } from './routes/app.facturacion'
 import { Route as AppMisServiciosRouteImport } from './routes/app.mis-servicios'
 import { Route as AppPlanificacionRouteImport } from './routes/app.planificacion'
 import { Route as ValorarIdRouteImport } from './routes/valorar.$id'
+import { Route as AppSaasIndexRouteImport } from './routes/app.saas.index'
 import { Route as AppServicioIdRouteImport } from './routes/app.servicio.$id'
 
 const IndexRoute = IndexRouteImport.update({
@@ -77,6 +78,11 @@ const ValorarIdRoute = ValorarIdRouteImport.update({
   path: '/valorar/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppSaasIndexRoute = AppSaasIndexRouteImport.update({
+  id: '/saas/',
+  path: '/saas/',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppServicioIdRoute = AppServicioIdRouteImport.update({
   id: '/servicio/$id',
   path: '/servicio/$id',
@@ -96,6 +102,7 @@ export interface FileRoutesByFullPath {
   '/valorar/$id': typeof ValorarIdRoute
   '/app/': typeof AppIndexRoute
   '/app/servicio/$id': typeof AppServicioIdRoute
+  '/app/saas/': typeof AppSaasIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -109,6 +116,7 @@ export interface FileRoutesByTo {
   '/valorar/$id': typeof ValorarIdRoute
   '/app': typeof AppIndexRoute
   '/app/servicio/$id': typeof AppServicioIdRoute
+  '/app/saas': typeof AppSaasIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -124,6 +132,7 @@ export interface FileRoutesById {
   '/valorar/$id': typeof ValorarIdRoute
   '/app/': typeof AppIndexRoute
   '/app/servicio/$id': typeof AppServicioIdRoute
+  '/app/saas/': typeof AppSaasIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -140,6 +149,7 @@ export interface FileRouteTypes {
     | '/valorar/$id'
     | '/app/'
     | '/app/servicio/$id'
+    | '/app/saas/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -153,6 +163,7 @@ export interface FileRouteTypes {
     | '/valorar/$id'
     | '/app'
     | '/app/servicio/$id'
+    | '/app/saas'
   id:
     | '__root__'
     | '/'
@@ -167,6 +178,7 @@ export interface FileRouteTypes {
     | '/valorar/$id'
     | '/app/'
     | '/app/servicio/$id'
+    | '/app/saas/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -256,6 +268,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ValorarIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/app/saas/': {
+      id: '/app/saas/'
+      path: '/saas'
+      fullPath: '/app/saas/'
+      preLoaderRoute: typeof AppSaasIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/servicio/$id': {
       id: '/app/servicio/$id'
       path: '/servicio/$id'
@@ -274,6 +293,7 @@ interface AppRouteChildren {
   AppPlanificacionRoute: typeof AppPlanificacionRoute
   AppIndexRoute: typeof AppIndexRoute
   AppServicioIdRoute: typeof AppServicioIdRoute
+  AppSaasIndexRoute: typeof AppSaasIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
@@ -284,6 +304,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppPlanificacionRoute: AppPlanificacionRoute,
   AppIndexRoute: AppIndexRoute,
   AppServicioIdRoute: AppServicioIdRoute,
+  AppSaasIndexRoute: AppSaasIndexRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
