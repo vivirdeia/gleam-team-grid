@@ -34,7 +34,12 @@ function Login() {
   const [pin, setPin] = useState("");
 
   function entrarAdmin() {
-    setSesion({ rol: "admin", nombre: "Elena Cortés" });
+    setSesion({
+      nivel: "tenant",
+      tenantId: cuadrillas[0]?.tenantId ?? "em1",
+      rol: "admin",
+      nombre: "Elena Cortés",
+    });
     toast.success("Bienvenida, Elena");
     navigate({ to: "/app" });
   }
@@ -47,7 +52,13 @@ function Login() {
       toast.error("PIN incorrecto");
       return;
     }
-    setSesion({ rol: "cuadrilla", nombre: cu.responsable, cuadrillaId: cu.id });
+    setSesion({
+      nivel: "tenant",
+      tenantId: cu.tenantId,
+      rol: "cuadrilla",
+      nombre: cu.responsable,
+      cuadrillaId: cu.id,
+    });
     toast.success(`Hola, ${cu.nombre}`);
     navigate({ to: "/app/mis-servicios" });
   }

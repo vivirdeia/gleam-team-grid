@@ -25,7 +25,9 @@ function MisServicios() {
   const hoy = hoyISO();
 
   const cuadrillaId =
-    sesion?.rol === "cuadrilla" ? sesion.cuadrillaId : (db.cuadrillas[0]?.id ?? "");
+    sesion?.nivel === "tenant" && sesion.rol === "cuadrilla"
+      ? (sesion.cuadrillaId ?? "")
+      : (db.cuadrillas[0]?.id ?? "");
   const cuadrilla = db.cuadrillas.find((c) => c.id === cuadrillaId);
 
   const mios = db.servicios.filter((s) => s.cuadrillaId === cuadrillaId);

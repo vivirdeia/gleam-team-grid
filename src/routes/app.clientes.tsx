@@ -76,6 +76,7 @@ function Clientes() {
     }
     const cliente: Cliente = {
       id: nuevoId("cl"),
+      tenantId: db.clientes[0]?.tenantId ?? "em1",
       nombre: form.nombre.trim(),
       contacto: form.contacto.trim() || form.nombre.trim(),
       telefono: form.telefono.trim(),

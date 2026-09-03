@@ -40,7 +40,9 @@ function Facturacion() {
 
   function generar() {
     const antes = db.facturas.length;
-    setDB((prev) => generarFacturasPeriodo(prev, periodo));
+    setDB((prev) =>
+      generarFacturasPeriodo(prev, periodo, db.facturas[0]?.tenantId ?? db.clientes[0]?.tenantId ?? "em1"),
+    );
     const despues = (db.facturas.length, antes);
     void despues;
     toast.success("Facturación del periodo generada");
