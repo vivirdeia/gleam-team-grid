@@ -121,7 +121,7 @@ export function registrarEmpresa({ nombre, emailContacto, zona }: AltaEmpresa): 
     frecuencia: base.frecuencia,
     tarifa: base.tarifa,
     acceso: base.acceso,
-    cuadrillaId: cuadrillas[i % cuadrillas.length]?.id,
+    cuadrillaId: cuadrillas[i % cuadrillas.length]?.id ?? cuadrillas[0]!.id,
     activo: true,
     alta: hoyISO(),
   }));
