@@ -182,3 +182,64 @@
     letter-spacing: -0.015em;
   }
 }
+
+/* --- Utilidades decorativas y de movimiento --- */
+
+@utility patron-puntos {
+  background-image: radial-gradient(oklch(0.62 0.098 218 / 0.16) 1px, transparent 1px);
+  background-size: 22px 22px;
+  mask-image: radial-gradient(ellipse at center, black 20%, transparent 72%);
+}
+
+@utility patron-malla {
+  background-image:
+    linear-gradient(oklch(0.62 0.098 218 / 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, oklch(0.62 0.098 218 / 0.08) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: linear-gradient(to bottom, black, transparent 85%);
+}
+
+@utility tarjeta-hover {
+  transition:
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.35s ease;
+}
+.tarjeta-hover:hover {
+  transform: translateY(-4px);
+  border-color: oklch(0.62 0.098 218 / 0.35);
+  box-shadow: 0 2px 4px oklch(0.5 0.05 220 / 8%), 0 26px 46px -26px oklch(0.5 0.08 220 / 45%);
+}
+
+@keyframes nitidia-flotar {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(0, -18px, 0) scale(1.03); }
+}
+
+@keyframes nitidia-pulso {
+  0%, 100% { opacity: 0.55; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.06); }
+}
+
+.flotar { animation: nitidia-flotar 13s ease-in-out infinite; }
+.flotar-lento { animation: nitidia-flotar 19s ease-in-out infinite; }
+.flotar-suave { animation: nitidia-flotar 8s ease-in-out infinite; }
+.pulso-suave { animation: nitidia-pulso 4.5s ease-in-out infinite; }
+
+.revelable {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.revelado {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flotar, .flotar-lento, .flotar-suave, .pulso-suave { animation: none; }
+  .revelable { opacity: 1; transform: none; transition: none; }
+  .tarjeta-hover:hover { transform: none; }
+}
