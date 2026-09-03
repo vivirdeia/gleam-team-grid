@@ -74,14 +74,20 @@ function MisServicios() {
                   key={s.id}
                   to="/app/servicio/$id"
                   params={{ id: s.id }}
-                  className="flex flex-wrap items-center gap-3 px-4 py-3 transition-colors hover:bg-muted/40"
+                  className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-1 px-4 py-3 transition-colors hover:bg-muted/40 sm:flex sm:flex-wrap"
                 >
-                  <span className="w-40 text-sm text-muted-foreground capitalize">
+                  <span className="order-1 min-w-0 truncate text-xs text-muted-foreground capitalize sm:order-none sm:w-40 sm:text-sm">
                     {fechaLarga(s.fecha)}
                   </span>
-                  <span className="w-14 text-sm font-semibold text-primary">{s.hora}</span>
-                  <span className="min-w-40 flex-1 text-sm font-medium">{c?.nombre}</span>
-                  <EstadoServicioPill estado={s.estado} />
+                  <span className="order-3 text-sm font-semibold text-primary sm:order-none sm:w-14">
+                    {s.hora}
+                  </span>
+                  <span className="order-2 min-w-0 truncate text-sm font-medium sm:order-none sm:min-w-40 sm:flex-1">
+                    {c?.nombre}
+                  </span>
+                  <span className="order-4 justify-self-end sm:order-none">
+                    <EstadoServicioPill estado={s.estado} />
+                  </span>
                 </Link>
               );
             })
