@@ -239,7 +239,7 @@ function Landing() {
               </ul>
             </Reveal>
 
-            <Reveal delay={120} className="relative">
+            <Reveal delay={120} className="relative my-10 lg:my-8">
               <div className="fondo-suave absolute -inset-4 -z-10 rounded-[2rem] opacity-40 blur-2xl" />
               <div className="superficie relative p-6">
                 <div className="flex items-center justify-between">
@@ -302,7 +302,7 @@ function Landing() {
               </div>
 
               {/* Tarjetas flotantes decorativas */}
-              <div className="superficie flotar-suave absolute -bottom-6 -left-4 hidden items-center gap-2 p-3 sm:flex">
+              <div className="superficie flotar-suave absolute -bottom-11 -left-4 hidden items-center gap-2 p-3 sm:flex">
                 <span className="flex size-8 items-center justify-center rounded-lg bg-exito/15 text-exito">
                   <ClipboardCheck className="size-4" />
                 </span>
@@ -311,7 +311,7 @@ function Landing() {
                   <span className="block text-muted-foreground">con 3 fotos</span>
                 </span>
               </div>
-              <div className="superficie flotar absolute -top-5 -right-3 hidden items-center gap-2 p-3 lg:flex">
+              <div className="superficie flotar absolute -top-11 right-0 hidden items-center gap-2 p-3 lg:flex">
                 <span className="flex size-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
                   <Receipt className="size-4" />
                 </span>
