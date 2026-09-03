@@ -44,8 +44,10 @@ function LayoutApp() {
 
   if (!sesion) return null;
 
+  const esSaas = sesion.nivel === "saas";
   const esAdmin = sesion.nivel !== "tenant" || sesion.rol === "admin";
-  const nav = esAdmin ? NAV_ADMIN : NAV_CUADRILLA;
+  const nav = esSaas ? [] : esAdmin ? NAV_ADMIN : NAV_CUADRILLA;
+  const empresa = sesion.nivel === "tenant" ? db.empresas.find((e) => e.id === sesion.tenantId) : undefined;
   const cuadrilla = db.cuadrillas.find(
     (c) => sesion.nivel === "tenant" && c.id === sesion.cuadrillaId,
   );
