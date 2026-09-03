@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/dialog";
 import { EstadoServicioPill, TituloSeccion } from "@/components/nitidia/ui";
 import { plantillaChecklist } from "@/lib/nitidia/seed";
-import { hoyISO, inicioSemana, isoDe, nuevoId, setDB, useDB } from "@/lib/nitidia/store";
+import { hoyISO, inicioSemana, isoDe, nuevoId, setTenantDB, useTenantDB } from "@/lib/nitidia/store";
 import type { Servicio } from "@/lib/nitidia/types";
 
 export const Route = createFileRoute("/app/planificacion")({
@@ -38,7 +38,7 @@ export const Route = createFileRoute("/app/planificacion")({
 const DIAS = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
 
 function Planificacion() {
-  const db = useDB();
+  const db = useTenantDB();
   const hoy = hoyISO();
   const [offset, setOffset] = useState(0);
   const [abierto, setAbierto] = useState(false);
@@ -67,7 +67,7 @@ function Planificacion() {
     }
     const servicio: Servicio = {
       id: nuevoId("s"),
-      tenantId: cliente.tenantId,
+      tenantId: db.empresa.id,
       clienteId: cliente.id,
       cuadrillaId: form.cuadrillaId,
       fecha: form.fecha,
@@ -78,7 +78,7 @@ function Planificacion() {
       importe: cliente.tarifa,
       ...(form.notas.trim() ? { notas: form.notas.trim() } : {}),
     };
-    setDB((prev) => ({ ...prev, servicios: [...prev.servicios, servicio] }));
+    setTenantDB(db.empresa.id, (v) => ({ servicios: [...v.servicios, servicio] }));
     setAbierto(false);
     setForm({ ...form, notas: "" });
     toast.success("Servicio planificado");

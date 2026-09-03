@@ -125,7 +125,7 @@ export function setTenantDB(
 /** Vista reactiva del tenant activo (o el indicado). */
 export function useTenantDB(tenantId?: string): TenantDB {
   const sesion = useSesion();
-  const id = tenantId ?? (sesion?.nivel === "tenant" ? sesion.tenantId : (getDB().empresas[0]?.id ?? ""));
+  const id = tenantId ?? (sesion?.nivel === "tenant" ? sesion.tenantId : "");
   const db = useDB();
   void db; // fuerza re-render al cambiar la base
   return getTenantDB(id);
