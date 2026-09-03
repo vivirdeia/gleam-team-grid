@@ -1,4 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { Building2, CalendarCheck, Euro, Star } from "lucide-react";
 import {
   EstadoFacturaPill,
@@ -7,7 +8,7 @@ import {
   Stat,
   TituloSeccion,
 } from "@/components/nitidia/ui";
-import { euros, fechaCorta, fechaLarga, hoyISO, useTenantDB } from "@/lib/nitidia/store";
+import { euros, fechaCorta, fechaLarga, hoyISO, useTenantDB, useSesion } from "@/lib/nitidia/store";
 
 export const Route = createFileRoute("/app/")({
   head: () => ({
@@ -25,6 +26,11 @@ export const Route = createFileRoute("/app/")({
 });
 
 function Panel() {
+  const sesion = useSesion();
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (sesion?.nivel === "saas") navigate({ to: "/app/saas", replace: true });
+  }, [sesion, navigate]);
   const db = useTenantDB();
   const hoy = hoyISO();
 
