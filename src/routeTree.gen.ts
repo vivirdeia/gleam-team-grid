@@ -14,6 +14,7 @@ import { Route as AppRouteImport } from './routes/app'
 import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as AppClientesRouteImport } from './routes/app.clientes'
 import { Route as AppCuadrillasRouteImport } from './routes/app.cuadrillas'
+import { Route as AppPlanificacionRouteImport } from './routes/app.planificacion'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -40,18 +41,25 @@ const AppCuadrillasRoute = AppCuadrillasRouteImport.update({
   path: '/cuadrillas',
   getParentRoute: () => AppRoute,
 } as any)
+const AppPlanificacionRoute = AppPlanificacionRouteImport.update({
+  id: '/planificacion',
+  path: '/planificacion',
+  getParentRoute: () => AppRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
   '/app/clientes': typeof AppClientesRoute
   '/app/cuadrillas': typeof AppCuadrillasRoute
+  '/app/planificacion': typeof AppPlanificacionRoute
   '/app/': typeof AppIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/app/clientes': typeof AppClientesRoute
   '/app/cuadrillas': typeof AppCuadrillasRoute
+  '/app/planificacion': typeof AppPlanificacionRoute
   '/app': typeof AppIndexRoute
 }
 export interface FileRoutesById {
@@ -60,14 +68,28 @@ export interface FileRoutesById {
   '/app': typeof AppRouteWithChildren
   '/app/clientes': typeof AppClientesRoute
   '/app/cuadrillas': typeof AppCuadrillasRoute
+  '/app/planificacion': typeof AppPlanificacionRoute
   '/app/': typeof AppIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/app' | '/app/clientes' | '/app/cuadrillas' | '/app/'
+  fullPaths:
+    | '/'
+    | '/app'
+    | '/app/clientes'
+    | '/app/cuadrillas'
+    | '/app/planificacion'
+    | '/app/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/app/clientes' | '/app/cuadrillas' | '/app'
-  id: '__root__' | '/' | '/app' | '/app/clientes' | '/app/cuadrillas' | '/app/'
+  to: '/' | '/app/clientes' | '/app/cuadrillas' | '/app/planificacion' | '/app'
+  id:
+    | '__root__'
+    | '/'
+    | '/app'
+    | '/app/clientes'
+    | '/app/cuadrillas'
+    | '/app/planificacion'
+    | '/app/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -112,18 +134,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppCuadrillasRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/planificacion': {
+      id: '/app/planificacion'
+      path: '/planificacion'
+      fullPath: '/app/planificacion'
+      preLoaderRoute: typeof AppPlanificacionRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
 interface AppRouteChildren {
   AppClientesRoute: typeof AppClientesRoute
   AppCuadrillasRoute: typeof AppCuadrillasRoute
+  AppPlanificacionRoute: typeof AppPlanificacionRoute
   AppIndexRoute: typeof AppIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
   AppClientesRoute: AppClientesRoute,
   AppCuadrillasRoute: AppCuadrillasRoute,
+  AppPlanificacionRoute: AppPlanificacionRoute,
   AppIndexRoute: AppIndexRoute,
 }
 
