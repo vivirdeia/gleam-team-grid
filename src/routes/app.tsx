@@ -67,7 +67,7 @@ function LayoutApp() {
       <header className="sticky top-0 z-30 border-b border-border/70 bg-background/85 backdrop-blur">
         <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center gap-3 px-4 py-3 sm:gap-4 sm:px-6">
           <Logo />
-          <nav className="order-3 -mx-1 flex w-full flex-1 gap-1 overflow-x-auto px-1 md:order-2 md:w-auto md:flex-wrap md:overflow-visible">
+          <nav className="order-3 -mx-1 flex w-full min-w-0 basis-full gap-1 overflow-x-auto px-1 pb-1 md:order-2 md:w-auto md:flex-1 md:basis-auto md:flex-wrap md:overflow-visible md:pb-0">
             {nav.map((item) => {
               const activo =
                 "exact" in item && item.exact ? pathname === item.to : pathname.startsWith(item.to);
