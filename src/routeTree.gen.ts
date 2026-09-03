@@ -21,6 +21,7 @@ import { Route as AppMisServiciosRouteImport } from './routes/app.mis-servicios'
 import { Route as AppPlanificacionRouteImport } from './routes/app.planificacion'
 import { Route as ValorarIdRouteImport } from './routes/valorar.$id'
 import { Route as AppSaasIndexRouteImport } from './routes/app.saas.index'
+import { Route as AppSaasIdRouteImport } from './routes/app.saas.$id'
 import { Route as AppServicioIdRouteImport } from './routes/app.servicio.$id'
 
 const IndexRoute = IndexRouteImport.update({
@@ -83,6 +84,11 @@ const AppSaasIndexRoute = AppSaasIndexRouteImport.update({
   path: '/saas/',
   getParentRoute: () => AppRoute,
 } as any)
+const AppSaasIdRoute = AppSaasIdRouteImport.update({
+  id: '/saas/$id',
+  path: '/saas/$id',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppServicioIdRoute = AppServicioIdRouteImport.update({
   id: '/servicio/$id',
   path: '/servicio/$id',
@@ -101,6 +107,7 @@ export interface FileRoutesByFullPath {
   '/app/planificacion': typeof AppPlanificacionRoute
   '/valorar/$id': typeof ValorarIdRoute
   '/app/': typeof AppIndexRoute
+  '/app/saas/$id': typeof AppSaasIdRoute
   '/app/servicio/$id': typeof AppServicioIdRoute
   '/app/saas/': typeof AppSaasIndexRoute
 }
@@ -115,6 +122,7 @@ export interface FileRoutesByTo {
   '/app/planificacion': typeof AppPlanificacionRoute
   '/valorar/$id': typeof ValorarIdRoute
   '/app': typeof AppIndexRoute
+  '/app/saas/$id': typeof AppSaasIdRoute
   '/app/servicio/$id': typeof AppServicioIdRoute
   '/app/saas': typeof AppSaasIndexRoute
 }
@@ -131,6 +139,7 @@ export interface FileRoutesById {
   '/app/planificacion': typeof AppPlanificacionRoute
   '/valorar/$id': typeof ValorarIdRoute
   '/app/': typeof AppIndexRoute
+  '/app/saas/$id': typeof AppSaasIdRoute
   '/app/servicio/$id': typeof AppServicioIdRoute
   '/app/saas/': typeof AppSaasIndexRoute
 }
@@ -148,6 +157,7 @@ export interface FileRouteTypes {
     | '/app/planificacion'
     | '/valorar/$id'
     | '/app/'
+    | '/app/saas/$id'
     | '/app/servicio/$id'
     | '/app/saas/'
   fileRoutesByTo: FileRoutesByTo
@@ -162,6 +172,7 @@ export interface FileRouteTypes {
     | '/app/planificacion'
     | '/valorar/$id'
     | '/app'
+    | '/app/saas/$id'
     | '/app/servicio/$id'
     | '/app/saas'
   id:
@@ -177,6 +188,7 @@ export interface FileRouteTypes {
     | '/app/planificacion'
     | '/valorar/$id'
     | '/app/'
+    | '/app/saas/$id'
     | '/app/servicio/$id'
     | '/app/saas/'
   fileRoutesById: FileRoutesById
@@ -275,6 +287,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppSaasIndexRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/saas/$id': {
+      id: '/app/saas/$id'
+      path: '/saas/$id'
+      fullPath: '/app/saas/$id'
+      preLoaderRoute: typeof AppSaasIdRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/servicio/$id': {
       id: '/app/servicio/$id'
       path: '/servicio/$id'
@@ -292,6 +311,7 @@ interface AppRouteChildren {
   AppMisServiciosRoute: typeof AppMisServiciosRoute
   AppPlanificacionRoute: typeof AppPlanificacionRoute
   AppIndexRoute: typeof AppIndexRoute
+  AppSaasIdRoute: typeof AppSaasIdRoute
   AppServicioIdRoute: typeof AppServicioIdRoute
   AppSaasIndexRoute: typeof AppSaasIndexRoute
 }
@@ -303,6 +323,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppMisServiciosRoute: AppMisServiciosRoute,
   AppPlanificacionRoute: AppPlanificacionRoute,
   AppIndexRoute: AppIndexRoute,
+  AppSaasIdRoute: AppSaasIdRoute,
   AppServicioIdRoute: AppServicioIdRoute,
   AppSaasIndexRoute: AppSaasIndexRoute,
 }

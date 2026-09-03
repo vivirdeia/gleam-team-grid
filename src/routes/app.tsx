@@ -32,6 +32,11 @@ const NAV_CUADRILLA = [
   { to: "/app/mis-servicios", label: "Mis servicios", icono: ClipboardList, exact: true },
 ] as const;
 
+const NAV_SAAS = [
+  { to: "/app/saas", label: "Vista general", icono: LayoutDashboard, exact: true },
+] as const;
+
+
 function LayoutApp() {
   const sesion = useSesion();
   const db = useDB();
