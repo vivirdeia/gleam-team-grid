@@ -60,7 +60,7 @@ export function generarFacturasPeriodo(db: NitidiaDB, periodo: string): NitidiaD
     ...db,
     facturas: [...db.facturas, ...nuevas],
     servicios: db.servicios.map((s) =>
-      asignadas.has(s.id) ? { ...s, facturaId: asignadas.get(s.id) } : s,
+      asignadas.has(s.id) ? { ...s, facturaId: asignadas.get(s.id)! } : s,
     ),
   };
 }
