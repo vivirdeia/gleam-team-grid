@@ -39,7 +39,7 @@ function LayoutApp() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   useEffect(() => {
-    if (!sesion) navigate({ to: "/", replace: true });
+    if (!sesion) navigate({ to: "/login", replace: true });
   }, [sesion, navigate]);
 
   if (!sesion) return null;
@@ -52,7 +52,7 @@ function LayoutApp() {
 
   function salir() {
     setSesion(null);
-    navigate({ to: "/", replace: true });
+    navigate({ to: "/login", replace: true });
   }
 
   return (
