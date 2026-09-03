@@ -206,3 +206,29 @@ export function TituloSeccion({
     </div>
   );
 }
+
+/** Atribución pública de la plantilla. */
+export function Atribucion({ className }: { className?: string }) {
+  return (
+    <p className={cn("text-xs text-muted-foreground", className)}>
+      Un producto de{" "}
+      <a
+        href="https://vivirdeia.com"
+        target="_blank"
+        rel="noreferrer noopener"
+        className="font-medium text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
+      >
+        Vivir de IA
+      </a>{" "}
+      · creado por{" "}
+      <a
+        href="https://linkedin.com/in/isaacwesleey"
+        target="_blank"
+        rel="noreferrer noopener"
+        className="font-medium text-foreground underline-offset-4 transition-colors hover:text-primary hover:underline"
+      >
+        Isaac Wesley
+      </a>
+    </p>
+  );
+}

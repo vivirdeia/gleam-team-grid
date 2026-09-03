@@ -17,7 +17,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Logo, Isotipo } from "@/components/nitidia/ui";
+import { Atribucion, Logo, Isotipo } from "@/components/nitidia/ui";
 import { Reveal, Blobs, PatronPuntos } from "@/components/nitidia/decor";
 import { PLANES } from "@/lib/nitidia/types";
 
@@ -618,8 +618,9 @@ function Landing() {
             </ul>
           </div>
         </div>
-        <div className="border-t border-border/60 py-6 text-center text-xs text-muted-foreground">
-          © {new Date().getFullYear()} Nitidia · Plantilla SaaS para empresas de limpieza
+        <div className="border-t border-border/60 px-6 py-6 text-center text-xs text-muted-foreground">
+          <p>© {new Date().getFullYear()} Nitidia · Plantilla SaaS para empresas de limpieza</p>
+          <Atribucion className="mt-2" />
         </div>
       </footer>
     </div>
