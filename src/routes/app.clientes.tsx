@@ -311,10 +311,11 @@ function Campo({
   valor: string;
   set: (v: string) => void;
 }) {
+  const id = `campo-${label.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
   return (
     <div className="space-y-2">
-      <Label>{label}</Label>
-      <Input value={valor} onChange={(e) => set(e.target.value)} />
+      <Label htmlFor={id}>{label}</Label>
+      <Input id={id} value={valor} onChange={(e) => set(e.target.value)} />
     </div>
   );
 }
