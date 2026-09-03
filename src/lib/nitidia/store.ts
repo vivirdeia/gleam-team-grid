@@ -103,14 +103,14 @@ export function euros(n: number) {
 }
 
 export function fechaLarga(iso: string) {
-  const [a, m, d] = iso.split("-").map(Number);
+  const [a = 2026, m = 1, d = 1] = iso.split("-").map(Number);
   return new Intl.DateTimeFormat("es-ES", { weekday: "long", day: "numeric", month: "long" }).format(
     new Date(a, m - 1, d),
   );
 }
 
 export function fechaCorta(iso: string) {
-  const [a, m, d] = iso.split("-").map(Number);
+  const [a = 2026, m = 1, d = 1] = iso.split("-").map(Number);
   return new Intl.DateTimeFormat("es-ES", { day: "2-digit", month: "2-digit", year: "numeric" }).format(
     new Date(a, m - 1, d),
   );
