@@ -26,6 +26,8 @@ export interface Empresa {
   plan: PlanSaaS;
   alta: string; // ISO date
   activo: boolean;
+  /** PIN simple de acceso para el rol admin del tenant (demo). */
+  pinAdmin?: string;
 }
 
 export interface DatosAcceso {
