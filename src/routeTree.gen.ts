@@ -14,6 +14,7 @@ import { Route as AppRouteImport } from './routes/app'
 import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as AppClientesRouteImport } from './routes/app.clientes'
 import { Route as AppCuadrillasRouteImport } from './routes/app.cuadrillas'
+import { Route as AppFacturacionRouteImport } from './routes/app.facturacion'
 import { Route as AppPlanificacionRouteImport } from './routes/app.planificacion'
 
 const IndexRoute = IndexRouteImport.update({
@@ -41,6 +42,11 @@ const AppCuadrillasRoute = AppCuadrillasRouteImport.update({
   path: '/cuadrillas',
   getParentRoute: () => AppRoute,
 } as any)
+const AppFacturacionRoute = AppFacturacionRouteImport.update({
+  id: '/facturacion',
+  path: '/facturacion',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppPlanificacionRoute = AppPlanificacionRouteImport.update({
   id: '/planificacion',
   path: '/planificacion',
@@ -52,6 +58,7 @@ export interface FileRoutesByFullPath {
   '/app': typeof AppRouteWithChildren
   '/app/clientes': typeof AppClientesRoute
   '/app/cuadrillas': typeof AppCuadrillasRoute
+  '/app/facturacion': typeof AppFacturacionRoute
   '/app/planificacion': typeof AppPlanificacionRoute
   '/app/': typeof AppIndexRoute
 }
@@ -59,6 +66,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/app/clientes': typeof AppClientesRoute
   '/app/cuadrillas': typeof AppCuadrillasRoute
+  '/app/facturacion': typeof AppFacturacionRoute
   '/app/planificacion': typeof AppPlanificacionRoute
   '/app': typeof AppIndexRoute
 }
@@ -68,6 +76,7 @@ export interface FileRoutesById {
   '/app': typeof AppRouteWithChildren
   '/app/clientes': typeof AppClientesRoute
   '/app/cuadrillas': typeof AppCuadrillasRoute
+  '/app/facturacion': typeof AppFacturacionRoute
   '/app/planificacion': typeof AppPlanificacionRoute
   '/app/': typeof AppIndexRoute
 }
@@ -78,16 +87,24 @@ export interface FileRouteTypes {
     | '/app'
     | '/app/clientes'
     | '/app/cuadrillas'
+    | '/app/facturacion'
     | '/app/planificacion'
     | '/app/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/app/clientes' | '/app/cuadrillas' | '/app/planificacion' | '/app'
+  to:
+    | '/'
+    | '/app/clientes'
+    | '/app/cuadrillas'
+    | '/app/facturacion'
+    | '/app/planificacion'
+    | '/app'
   id:
     | '__root__'
     | '/'
     | '/app'
     | '/app/clientes'
     | '/app/cuadrillas'
+    | '/app/facturacion'
     | '/app/planificacion'
     | '/app/'
   fileRoutesById: FileRoutesById
@@ -134,6 +151,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppCuadrillasRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/facturacion': {
+      id: '/app/facturacion'
+      path: '/facturacion'
+      fullPath: '/app/facturacion'
+      preLoaderRoute: typeof AppFacturacionRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/planificacion': {
       id: '/app/planificacion'
       path: '/planificacion'
@@ -147,6 +171,7 @@ declare module '@tanstack/react-router' {
 interface AppRouteChildren {
   AppClientesRoute: typeof AppClientesRoute
   AppCuadrillasRoute: typeof AppCuadrillasRoute
+  AppFacturacionRoute: typeof AppFacturacionRoute
   AppPlanificacionRoute: typeof AppPlanificacionRoute
   AppIndexRoute: typeof AppIndexRoute
 }
@@ -154,6 +179,7 @@ interface AppRouteChildren {
 const AppRouteChildren: AppRouteChildren = {
   AppClientesRoute: AppClientesRoute,
   AppCuadrillasRoute: AppCuadrillasRoute,
+  AppFacturacionRoute: AppFacturacionRoute,
   AppPlanificacionRoute: AppPlanificacionRoute,
   AppIndexRoute: AppIndexRoute,
 }
