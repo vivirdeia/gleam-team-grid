@@ -87,14 +87,18 @@ function LayoutApp() {
             <div className="hidden text-right sm:block">
               <p className="text-sm font-medium text-foreground">{sesion.nombre}</p>
               <p className="text-xs text-muted-foreground">
-                {esAdmin ? "Super admin" : (cuadrilla?.nombre ?? "Cuadrilla")}
+                {esSaas
+                  ? "Super admin del SaaS"
+                  : esAdmin
+                    ? (empresa?.nombre ?? "Empresa")
+                    : (cuadrilla?.nombre ?? "Cuadrilla")}
               </p>
             </div>
-            {esAdmin ? (
+            {esSaas ? (
               <Button
                 variant="ghost"
                 size="icon"
-                title="Restaurar datos de demo"
+                title="Restaurar datos de demo (todas las empresas)"
                 onClick={() => {
                   resetDemo();
                   toast.success("Datos de demo restaurados");
@@ -111,8 +115,56 @@ function LayoutApp() {
       </header>
 
       <main className="mx-auto w-full max-w-7xl px-6 py-8">
-        <Outlet />
+        {esSaas ? <PanelSaaS /> : <Outlet />}
       </main>
     </div>
+  );
+}
+
+function PanelSaaS() {
+  const db = useDB();
+
+  return (
+    <section>
+      <div className="superficie mb-6 flex items-start gap-3 p-6">
+        <Building2 className="mt-0.5 size-5 shrink-0 text-primary" />
+        <div>
+          <h1 className="font-display text-xl font-semibold">Panel de super admin en construcción</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Aquí verás todas las empresas del SaaS. De momento es una vista de solo lectura; la
+            gestión completa llega en la siguiente fase.
+          </p>
+        </div>
+      </div>
+
+      <div className="superficie overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead className="border-b border-border text-left text-xs uppercase text-muted-foreground">
+            <tr>
+              <th className="px-4 py-3">Empresa</th>
+              <th className="px-4 py-3">Plan</th>
+              <th className="px-4 py-3 text-right">Clientes</th>
+              <th className="px-4 py-3 text-right">Servicios</th>
+              <th className="px-4 py-3">Estado</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-border">
+            {db.empresas.map((e) => (
+              <tr key={e.id} className="hover:bg-muted/40">
+                <td className="px-4 py-3 font-medium">{e.nombre}</td>
+                <td className="px-4 py-3 capitalize text-muted-foreground">{e.plan}</td>
+                <td className="px-4 py-3 text-right">
+                  {db.clientes.filter((c) => c.tenantId === e.id).length}
+                </td>
+                <td className="px-4 py-3 text-right">
+                  {db.servicios.filter((s) => s.tenantId === e.id).length}
+                </td>
+                <td className="px-4 py-3 text-muted-foreground">{e.activo ? "Activa" : "Inactiva"}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
   );
 }
