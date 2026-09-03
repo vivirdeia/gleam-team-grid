@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { EstadoFacturaPill, Stat, TituloSeccion } from "@/components/nitidia/ui";
 import { generarFacturasPeriodo, periodoDe } from "@/lib/nitidia/facturacion";
-import { euros, fechaCorta, hoyISO, setDB, useDB } from "@/lib/nitidia/store";
+import { euros, fechaCorta, hoyISO, setDB, setTenantDB, useTenantDB } from "@/lib/nitidia/store";
 import type { EstadoFactura } from "@/lib/nitidia/types";
 
 export const Route = createFileRoute("/app/facturacion")({
@@ -24,7 +24,7 @@ export const Route = createFileRoute("/app/facturacion")({
 });
 
 function Facturacion() {
-  const db = useDB();
+  const db = useTenantDB();
   const [filtro, setFiltro] = useState<"todas" | EstadoFactura>("todas");
   const periodo = periodoDe(hoyISO());
 
@@ -39,19 +39,13 @@ function Facturacion() {
   const ticket = db.facturas.length ? (cobrado + pendiente) / db.facturas.length : 0;
 
   function generar() {
-    const antes = db.facturas.length;
-    setDB((prev) =>
-      generarFacturasPeriodo(prev, periodo, db.facturas[0]?.tenantId ?? db.clientes[0]?.tenantId ?? "em1"),
-    );
-    const despues = (db.facturas.length, antes);
-    void despues;
+    setDB((prev) => generarFacturasPeriodo(prev, periodo, db.empresa.id));
     toast.success("Facturación del periodo generada");
   }
 
   function marcarPagada(id: string) {
-    setDB((prev) => ({
-      ...prev,
-      facturas: prev.facturas.map((f) =>
+    setTenantDB(db.empresa.id, (v) => ({
+      facturas: v.facturas.map((f) =>
         f.id === id ? { ...f, estado: "pagada" as EstadoFactura, pagadaEl: hoyISO() } : f,
       ),
     }));

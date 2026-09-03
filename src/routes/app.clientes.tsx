@@ -16,7 +16,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { FRECUENCIAS, Pill, TIPOS, TituloSeccion } from "@/components/nitidia/ui";
-import { euros, hoyISO, nuevoId, setDB, useDB } from "@/lib/nitidia/store";
+import { euros, hoyISO, nuevoId, setTenantDB, useTenantDB } from "@/lib/nitidia/store";
 import type { Cliente, Frecuencia, TipoEspacio } from "@/lib/nitidia/types";
 
 export const Route = createFileRoute("/app/clientes")({
@@ -53,7 +53,7 @@ const FORM_INICIAL = {
 };
 
 function Clientes() {
-  const db = useDB();
+  const db = useTenantDB();
   const [busqueda, setBusqueda] = useState("");
   const [filtro, setFiltro] = useState<"todos" | TipoEspacio>("todos");
   const [abierto, setAbierto] = useState(false);
@@ -76,7 +76,7 @@ function Clientes() {
     }
     const cliente: Cliente = {
       id: nuevoId("cl"),
-      tenantId: db.clientes[0]?.tenantId ?? "em1",
+      tenantId: db.empresa.id,
       nombre: form.nombre.trim(),
       contacto: form.contacto.trim() || form.nombre.trim(),
       telefono: form.telefono.trim(),
@@ -97,7 +97,7 @@ function Clientes() {
       activo: true,
       alta: hoyISO(),
     };
-    setDB((prev) => ({ ...prev, clientes: [cliente, ...prev.clientes] }));
+    setTenantDB(db.empresa.id, (v) => ({ clientes: [cliente, ...v.clientes] }));
     setForm(FORM_INICIAL);
     setAbierto(false);
     toast.success("Cliente creado");

@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { CalendarDays, KeyRound, MapPin } from "lucide-react";
 import { EstadoServicioPill, Pill, TituloSeccion } from "@/components/nitidia/ui";
-import { fechaLarga, hoyISO, useDB, useSesion } from "@/lib/nitidia/store";
+import { fechaLarga, hoyISO, useSesion, useTenantDB } from "@/lib/nitidia/store";
 import type { Servicio } from "@/lib/nitidia/types";
 
 export const Route = createFileRoute("/app/mis-servicios")({
@@ -20,7 +20,7 @@ export const Route = createFileRoute("/app/mis-servicios")({
 });
 
 function MisServicios() {
-  const db = useDB();
+  const db = useTenantDB();
   const sesion = useSesion();
   const hoy = hoyISO();
 
@@ -93,7 +93,7 @@ function MisServicios() {
 }
 
 function TarjetaServicio({ servicio }: { servicio: Servicio }) {
-  const db = useDB();
+  const db = useTenantDB();
   const c = db.clientes.find((x) => x.id === servicio.clienteId);
   const hechas = servicio.checklist.filter((t) => t.hecha).length;
   const pct = Math.round((hechas / servicio.checklist.length) * 100);

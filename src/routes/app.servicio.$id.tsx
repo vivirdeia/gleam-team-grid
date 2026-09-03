@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { EstadoServicioPill, Estrellas, Pill } from "@/components/nitidia/ui";
-import { fechaLarga, setDB, useDB } from "@/lib/nitidia/store";
+import { fechaLarga, setTenantDB, useTenantDB } from "@/lib/nitidia/store";
 import type { Servicio } from "@/lib/nitidia/types";
 
 export const Route = createFileRoute("/app/servicio/$id")({
@@ -25,7 +25,7 @@ export const Route = createFileRoute("/app/servicio/$id")({
 
 function DetalleServicio() {
   const { id } = Route.useParams();
-  const db = useDB();
+  const db = useTenantDB();
   const fileRef = useRef<HTMLInputElement | null>(null);
   const tareaFoto = useRef<string | null>(null);
 
@@ -44,9 +44,8 @@ function DetalleServicio() {
   const pct = Math.round((hechas / servicio.checklist.length) * 100);
 
   function actualizar(fn: (s: Servicio) => Servicio) {
-    setDB((prev) => ({
-      ...prev,
-      servicios: prev.servicios.map((s) => (s.id === id ? fn(s) : s)),
+    setTenantDB(db.empresa.id, (v) => ({
+      servicios: v.servicios.map((s) => (s.id === id ? fn(s) : s)),
     }));
   }
 

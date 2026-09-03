@@ -7,7 +7,7 @@ import {
   Stat,
   TituloSeccion,
 } from "@/components/nitidia/ui";
-import { euros, fechaCorta, fechaLarga, hoyISO, useDB } from "@/lib/nitidia/store";
+import { euros, fechaCorta, fechaLarga, hoyISO, useTenantDB } from "@/lib/nitidia/store";
 
 export const Route = createFileRoute("/app/")({
   head: () => ({
@@ -25,7 +25,7 @@ export const Route = createFileRoute("/app/")({
 });
 
 function Panel() {
-  const db = useDB();
+  const db = useTenantDB();
   const hoy = hoyISO();
 
   const serviciosHoy = db.servicios

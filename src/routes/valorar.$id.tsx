@@ -4,7 +4,7 @@ import { CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Estrellas, Logo } from "@/components/nitidia/ui";
-import { fechaLarga, setDB, useDB } from "@/lib/nitidia/store";
+import { fechaLarga, setTenantDB, useDB } from "@/lib/nitidia/store";
 
 export const Route = createFileRoute("/valorar/$id")({
   head: () => ({
@@ -43,9 +43,8 @@ function ValorarPage() {
       ...(texto ? { comentario: texto } : {}),
       fecha: new Date().toISOString().slice(0, 10),
     };
-    setDB((prev) => ({
-      ...prev,
-      servicios: prev.servicios.map((s) => (s.id === id ? { ...s, valoracion } : s)),
+    setTenantDB(servicio.tenantId, (v) => ({
+      servicios: v.servicios.map((s) => (s.id === id ? { ...s, valoracion } : s)),
     }));
   }
 

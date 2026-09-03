@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Clock, MapPin, Users, KeyRound } from "lucide-react";
 import { FRECUENCIAS, Pill, TituloSeccion } from "@/components/nitidia/ui";
-import { hoyISO, useDB } from "@/lib/nitidia/store";
+import { hoyISO, useTenantDB } from "@/lib/nitidia/store";
 
 export const Route = createFileRoute("/app/cuadrillas")({
   head: () => ({
@@ -19,7 +19,7 @@ export const Route = createFileRoute("/app/cuadrillas")({
 });
 
 function Cuadrillas() {
-  const db = useDB();
+  const db = useTenantDB();
   const hoy = hoyISO();
 
   return (
