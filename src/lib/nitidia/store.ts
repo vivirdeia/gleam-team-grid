@@ -1,12 +1,13 @@
 import { useSyncExternalStore } from "react";
 import { crearDemo } from "./seed";
-import type { NitidiaDB, Sesion } from "./types";
+import type { Empresa, NitidiaDB, Sesion, TenantDB } from "./types";
 
-const CLAVE_DB = "nitidia.db.v1";
-const CLAVE_SESION = "nitidia.sesion.v1";
+const CLAVE_DB = "nitidia.db.v2";
+const CLAVE_SESION = "nitidia.sesion.v2";
 
 let cacheDB: NitidiaDB | null = null;
 let cacheSesion: Sesion | null | undefined = undefined;
+let cacheTenantDB: { tenantId: string; db: NitidiaDB; vista: TenantDB } | null = null;
 
 const oyentes = new Set<() => void>();
 function emitir() {
@@ -19,6 +20,8 @@ function suscribir(f: () => void) {
 
 const hayLS = () => typeof window !== "undefined" && !!window.localStorage;
 
+/* ---------- base global (solo super admin del SaaS) ---------- */
+
 export function getDB(): NitidiaDB {
   if (cacheDB) return cacheDB;
   if (!hayLS()) {
@@ -28,11 +31,14 @@ export function getDB(): NitidiaDB {
   try {
     const raw = window.localStorage.getItem(CLAVE_DB);
     if (raw) {
-      cacheDB = JSON.parse(raw) as NitidiaDB;
-      return cacheDB;
+      const parsed = JSON.parse(raw) as NitidiaDB;
+      if (parsed.version === 2 && Array.isArray(parsed.empresas)) {
+        cacheDB = parsed;
+        return cacheDB;
+      }
     }
   } catch {
-    /* datos corruptos: se regenera la demo */
+    /* datos corruptos o de una versión antigua: se regenera la demo */
   }
   cacheDB = crearDemo();
   window.localStorage.setItem(CLAVE_DB, JSON.stringify(cacheDB));
@@ -60,6 +66,77 @@ export function useDB(): NitidiaDB {
     () => dbServidor,
   );
 }
+
+/* ---------- acotado al tenant ---------- */
+
+export function getEmpresa(tenantId: string): Empresa | undefined {
+  return getDB().empresas.find((e) => e.id === tenantId);
+}
+
+export function getTenantDB(tenantId: string): TenantDB {
+  const db = getDB();
+  if (cacheTenantDB && cacheTenantDB.tenantId === tenantId && cacheTenantDB.db === db) {
+    return cacheTenantDB.vista;
+  }
+  const empresa =
+    db.empresas.find((e) => e.id === tenantId) ??
+    ({ id: tenantId, nombre: "Empresa", slug: tenantId, emailContacto: "", plan: "prueba", alta: "", activo: false } as Empresa);
+  const vista: TenantDB = {
+    empresa,
+    clientes: db.clientes.filter((c) => c.tenantId === tenantId),
+    cuadrillas: db.cuadrillas.filter((c) => c.tenantId === tenantId),
+    servicios: db.servicios.filter((s) => s.tenantId === tenantId),
+    facturas: db.facturas.filter((f) => f.tenantId === tenantId),
+  };
+  cacheTenantDB = { tenantId, db, vista };
+  return vista;
+}
+
+/** Escritura acotada: la función recibe y devuelve SOLO los datos del tenant. */
+export function setTenantDB(
+  tenantId: string,
+  actualizar: (vista: TenantDB) => Partial<Omit<TenantDB, "empresa">> & { empresa?: Empresa },
+) {
+  setDB((db) => {
+    const vista = getTenantDB(tenantId);
+    const cambios = actualizar(vista);
+    const fuera = <T extends { tenantId: string }>(filas: T[]) =>
+      filas.filter((f) => f.tenantId !== tenantId);
+    const sello = <T extends { tenantId: string }>(filas: T[]) =>
+      filas.map((f) => (f.tenantId === tenantId ? f : { ...f, tenantId }));
+
+    return {
+      ...db,
+      empresas: cambios.empresa
+        ? db.empresas.map((e) => (e.id === tenantId ? cambios.empresa! : e))
+        : db.empresas,
+      clientes: cambios.clientes ? [...fuera(db.clientes), ...sello(cambios.clientes)] : db.clientes,
+      cuadrillas: cambios.cuadrillas
+        ? [...fuera(db.cuadrillas), ...sello(cambios.cuadrillas)]
+        : db.cuadrillas,
+      servicios: cambios.servicios
+        ? [...fuera(db.servicios), ...sello(cambios.servicios)]
+        : db.servicios,
+      facturas: cambios.facturas ? [...fuera(db.facturas), ...sello(cambios.facturas)] : db.facturas,
+    };
+  });
+}
+
+/** Vista reactiva del tenant activo (o el indicado). */
+export function useTenantDB(tenantId?: string): TenantDB {
+  const sesion = useSesion();
+  const id = tenantId ?? (sesion?.nivel === "tenant" ? sesion.tenantId : (getDB().empresas[0]?.id ?? ""));
+  const db = useDB();
+  void db; // fuerza re-render al cambiar la base
+  return getTenantDB(id);
+}
+
+/** Id del tenant activo según la sesión (null para el super admin del SaaS). */
+export function tenantActivo(sesion: Sesion | null): string | null {
+  return sesion?.nivel === "tenant" ? sesion.tenantId : null;
+}
+
+/* ---------- sesión ---------- */
 
 export function getSesion(): Sesion | null {
   if (cacheSesion !== undefined) return cacheSesion;
