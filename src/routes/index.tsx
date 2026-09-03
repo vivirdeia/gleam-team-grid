@@ -17,7 +17,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Logo, Isotipo } from "@/components/nitidia/ui";
+import { Atribucion, Logo, Isotipo } from "@/components/nitidia/ui";
 import { Reveal, Blobs, PatronPuntos } from "@/components/nitidia/decor";
 import { PLANES } from "@/lib/nitidia/types";
 
