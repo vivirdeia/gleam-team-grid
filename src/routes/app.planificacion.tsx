@@ -67,6 +67,7 @@ function Planificacion() {
     }
     const servicio: Servicio = {
       id: nuevoId("s"),
+      tenantId: cliente.tenantId,
       clienteId: cliente.id,
       cuadrillaId: form.cuadrillaId,
       fecha: form.fecha,

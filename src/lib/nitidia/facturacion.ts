@@ -14,9 +14,17 @@ function redondear(n: number) {
  * Facturación recurrente: agrupa los servicios completados y no facturados
  * de un periodo (mes) por cliente y genera una factura por cliente.
  */
-export function generarFacturasPeriodo(db: NitidiaDB, periodo: string): NitidiaDB {
+export function generarFacturasPeriodo(
+  db: NitidiaDB,
+  periodo: string,
+  tenantId: string,
+): NitidiaDB {
   const pendientes = db.servicios.filter(
-    (s) => s.estado === "completado" && !s.facturaId && periodoDe(s.fecha) === periodo,
+    (s) =>
+      s.tenantId === tenantId &&
+      s.estado === "completado" &&
+      !s.facturaId &&
+      periodoDe(s.fecha) === periodo,
   );
   if (pendientes.length === 0) return db;
 
@@ -28,7 +36,7 @@ export function generarFacturasPeriodo(db: NitidiaDB, periodo: string): NitidiaD
   });
 
   const nuevas: Factura[] = [];
-  let contador = db.facturas.filter((f) => f.periodo === periodo).length;
+  let contador = db.facturas.filter((f) => f.tenantId === tenantId && f.periodo === periodo).length;
   const emision = new Date();
   const venc = new Date();
   venc.setDate(venc.getDate() + 15);
@@ -37,10 +45,11 @@ export function generarFacturasPeriodo(db: NitidiaDB, periodo: string): NitidiaD
     contador += 1;
     const base = redondear(servicios.reduce((t, s) => t + s.importe, 0));
     const iva = redondear(base * IVA);
-    const id = `f${periodo.replace("-", "")}${clienteId}`;
+    const id = `${tenantId}-f${periodo.replace("-", "")}${clienteId}`;
     nuevas.push({
       id,
-      numero: `NIT-${periodo.replace("-", "")}-${String(contador).padStart(3, "0")}`,
+      tenantId,
+      numero: `${tenantId.toUpperCase()}-${periodo.replace("-", "")}-${String(contador).padStart(3, "0")}`,
       clienteId,
       periodo,
       emision: emision.toISOString().slice(0, 10),

@@ -44,9 +44,11 @@ function LayoutApp() {
 
   if (!sesion) return null;
 
-  const esAdmin = sesion.rol === "admin";
+  const esAdmin = sesion.nivel !== "tenant" || sesion.rol === "admin";
   const nav = esAdmin ? NAV_ADMIN : NAV_CUADRILLA;
-  const cuadrilla = db.cuadrillas.find((c) => c.id === sesion.cuadrillaId);
+  const cuadrilla = db.cuadrillas.find(
+    (c) => sesion.nivel === "tenant" && c.id === sesion.cuadrillaId,
+  );
 
   function salir() {
     setSesion(null);
