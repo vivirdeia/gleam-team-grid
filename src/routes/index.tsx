@@ -303,7 +303,7 @@ function Landing() {
 
               {/* Tarjetas complementarias */}
               <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                <div className="superficie flotar-suave flex items-center gap-2 p-3">
+                <div className="superficie tarjeta-hover flex items-center gap-2 p-3">
                   <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-exito/15 text-exito">
                     <ClipboardCheck className="size-4" />
                   </span>
@@ -312,7 +312,7 @@ function Landing() {
                     <span className="block text-muted-foreground">con 3 fotos</span>
                   </span>
                 </div>
-                <div className="superficie flotar flex items-center gap-2 p-3">
+                <div className="superficie tarjeta-hover flex items-center gap-2 p-3">
                   <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
                     <Receipt className="size-4" />
                   </span>
