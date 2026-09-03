@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/dialog";
 import { FRECUENCIAS, Pill, TIPOS, TituloSeccion } from "@/components/nitidia/ui";
 import { euros, hoyISO, nuevoId, setTenantDB, useTenantDB } from "@/lib/nitidia/store";
+import { PLANES } from "@/lib/nitidia/types";
 import type { Cliente, Frecuencia, TipoEspacio } from "@/lib/nitidia/types";
 
 export const Route = createFileRoute("/app/clientes")({
@@ -58,6 +59,9 @@ function Clientes() {
   const [filtro, setFiltro] = useState<"todos" | TipoEspacio>("todos");
   const [abierto, setAbierto] = useState(false);
   const [form, setForm] = useState(FORM_INICIAL);
+  const plan = PLANES[db.empresa.plan];
+  const limitePlan = plan.limiteClientes;
+  const limiteAlcanzado = db.clientes.length >= limitePlan;
 
   const lista = useMemo(() => {
     const q = busqueda.trim().toLowerCase();
@@ -118,7 +122,7 @@ function Clientes() {
         accion={
           <Dialog open={abierto} onOpenChange={setAbierto}>
             <DialogTrigger asChild>
-              <Button>
+              <Button disabled={limiteAlcanzado}>
                 <Plus className="size-4" /> Nuevo cliente
               </Button>
             </DialogTrigger>
@@ -200,6 +204,20 @@ function Clientes() {
           </Dialog>
         }
       />
+
+      {limiteAlcanzado ? (
+        <div className="mb-6 flex items-start gap-3 rounded-xl border border-amber-300/60 bg-amber-50 p-4 text-sm text-amber-900 dark:border-amber-500/40 dark:bg-amber-500/10 dark:text-amber-200">
+          <ShieldAlert className="mt-0.5 size-4 shrink-0" />
+          <p>
+            Has alcanzado el límite de tu plan {plan.etiqueta}: {limitePlan} clientes. Mejora de plan
+            para añadir más.
+          </p>
+        </div>
+      ) : (
+        <p className="mb-4 text-xs text-muted-foreground">
+          Plan {plan.etiqueta} · {db.clientes.length} de {limitePlan} clientes usados
+        </p>
+      )}
 
       <div className="mb-6 flex flex-wrap items-center gap-3">
         <div className="relative min-w-64 flex-1">
