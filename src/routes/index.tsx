@@ -179,7 +179,7 @@ function Landing() {
               <Link to="/login">Iniciar sesión</Link>
             </Button>
             <Button asChild size="sm" className="transition-transform hover:-translate-y-0.5">
-              <Link to="/login">Empieza gratis</Link>
+              <Link to="/registro">Empieza gratis</Link>
             </Button>
           </div>
         </div>
