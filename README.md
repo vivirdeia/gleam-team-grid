@@ -114,7 +114,7 @@ La cuadrilla solo ve `/app/mis-servicios` y el checklist de sus servicios (pensa
 ### Empresa nueva
 En `/registro` das de alta una empresa: se crea el tenant con plan de prueba y se siembran
 automáticamente 2 cuadrillas y 4 clientes de ejemplo. Aparecerá luego en la lista de `/login`
-(PIN admin `1234` por defecto para las empresas creadas desde el registro).
+(PIN admin `0000` por defecto para las empresas creadas desde el registro).
 
 ### Valoración pública
 Abre `/valorar/<idDelServicio>` (por ejemplo desde el detalle del servicio, botón de copiar link).
