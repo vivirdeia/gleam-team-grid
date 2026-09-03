@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as AppClientesRouteImport } from './routes/app.clientes'
+import { Route as AppCuadrillasRouteImport } from './routes/app.cuadrillas'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -34,16 +35,23 @@ const AppClientesRoute = AppClientesRouteImport.update({
   path: '/clientes',
   getParentRoute: () => AppRoute,
 } as any)
+const AppCuadrillasRoute = AppCuadrillasRouteImport.update({
+  id: '/cuadrillas',
+  path: '/cuadrillas',
+  getParentRoute: () => AppRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
   '/app/clientes': typeof AppClientesRoute
+  '/app/cuadrillas': typeof AppCuadrillasRoute
   '/app/': typeof AppIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/app/clientes': typeof AppClientesRoute
+  '/app/cuadrillas': typeof AppCuadrillasRoute
   '/app': typeof AppIndexRoute
 }
 export interface FileRoutesById {
@@ -51,14 +59,15 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
   '/app/clientes': typeof AppClientesRoute
+  '/app/cuadrillas': typeof AppCuadrillasRoute
   '/app/': typeof AppIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/app' | '/app/clientes' | '/app/'
+  fullPaths: '/' | '/app' | '/app/clientes' | '/app/cuadrillas' | '/app/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/app/clientes' | '/app'
-  id: '__root__' | '/' | '/app' | '/app/clientes' | '/app/'
+  to: '/' | '/app/clientes' | '/app/cuadrillas' | '/app'
+  id: '__root__' | '/' | '/app' | '/app/clientes' | '/app/cuadrillas' | '/app/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -96,16 +105,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppClientesRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/cuadrillas': {
+      id: '/app/cuadrillas'
+      path: '/cuadrillas'
+      fullPath: '/app/cuadrillas'
+      preLoaderRoute: typeof AppCuadrillasRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
 interface AppRouteChildren {
   AppClientesRoute: typeof AppClientesRoute
+  AppCuadrillasRoute: typeof AppCuadrillasRoute
   AppIndexRoute: typeof AppIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
   AppClientesRoute: AppClientesRoute,
+  AppCuadrillasRoute: AppCuadrillasRoute,
   AppIndexRoute: AppIndexRoute,
 }
 
