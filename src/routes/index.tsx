@@ -301,24 +301,26 @@ function Landing() {
                 </div>
               </div>
 
-              {/* Tarjetas flotantes decorativas */}
-              <div className="superficie flotar-suave absolute -bottom-11 -left-4 hidden items-center gap-2 p-3 sm:flex">
-                <span className="flex size-8 items-center justify-center rounded-lg bg-exito/15 text-exito">
-                  <ClipboardCheck className="size-4" />
-                </span>
-                <span className="text-xs">
-                  <span className="block font-semibold">Checklist 12/12</span>
-                  <span className="block text-muted-foreground">con 3 fotos</span>
-                </span>
-              </div>
-              <div className="superficie flotar absolute -top-11 right-0 hidden items-center gap-2 p-3 lg:flex">
-                <span className="flex size-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                  <Receipt className="size-4" />
-                </span>
-                <span className="text-xs">
-                  <span className="block font-semibold">Factura enviada</span>
-                  <span className="block text-muted-foreground">Mayo · 1.240 €</span>
-                </span>
+              {/* Tarjetas complementarias */}
+              <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                <div className="superficie flotar-suave flex items-center gap-2 p-3">
+                  <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-exito/15 text-exito">
+                    <ClipboardCheck className="size-4" />
+                  </span>
+                  <span className="text-xs">
+                    <span className="block font-semibold">Checklist 12/12</span>
+                    <span className="block text-muted-foreground">con 3 fotos</span>
+                  </span>
+                </div>
+                <div className="superficie flotar flex items-center gap-2 p-3">
+                  <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                    <Receipt className="size-4" />
+                  </span>
+                  <span className="text-xs">
+                    <span className="block font-semibold">Factura enviada</span>
+                    <span className="block text-muted-foreground">Mayo · 1.240 €</span>
+                  </span>
+                </div>
               </div>
             </Reveal>
           </div>
