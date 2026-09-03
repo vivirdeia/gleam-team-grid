@@ -1,6 +1,7 @@
 import type {
   Cliente,
   Cuadrilla,
+  Empresa,
   Factura,
   NitidiaDB,
   Servicio,
@@ -45,8 +46,48 @@ function dias(offset: number) {
   d.setDate(d.getDate() + offset);
   return iso(d);
 }
+function redondear(n: number) {
+  return Math.round(n * 100) / 100;
+}
 
-const CUADRILLAS: Cuadrilla[] = [
+/* ---------------- Empresas (tenants) ---------------- */
+
+export const EMPRESAS: Empresa[] = [
+  {
+    id: "em1",
+    nombre: "Brillo Madrid Servicios",
+    slug: "brillo-madrid",
+    emailContacto: "administracion@brillomadrid.es",
+    plan: "pro",
+    alta: "2025-09-01",
+    activo: true,
+  },
+  {
+    id: "em2",
+    nombre: "Clara Levante Limpiezas",
+    slug: "clara-levante",
+    emailContacto: "hola@claralevante.com",
+    plan: "starter",
+    alta: "2025-12-14",
+    activo: true,
+  },
+  {
+    id: "em3",
+    nombre: "NorteLimp Bilbao",
+    slug: "nortelimp",
+    emailContacto: "contacto@nortelimp.eus",
+    plan: "prueba",
+    alta: "2026-08-11",
+    activo: true,
+  },
+];
+
+/* ---------------- Cuadrillas por tenant ---------------- */
+
+type CuadrillaSemilla = Omit<Cuadrilla, "tenantId">;
+type ClienteSemilla = Omit<Cliente, "tenantId">;
+
+const CUADRILLAS_EM1: CuadrillaSemilla[] = [
   {
     id: "cu1",
     nombre: "Cuadrilla Azul",
@@ -82,7 +123,48 @@ const CUADRILLAS: Cuadrilla[] = [
   },
 ];
 
-const CLIENTES: Cliente[] = [
+const CUADRILLAS_EM2: CuadrillaSemilla[] = [
+  {
+    id: "cu1",
+    nombre: "Equipo Marina",
+    responsable: "Vicent Roig",
+    integrantes: ["Vicent Roig", "Amparo Gil"],
+    zona: "Ruzafa / Eixample",
+    disponibilidad: "L-V · 08:00 a 16:00",
+    color: "#2f9fb5",
+    pin: "1111",
+    activa: true,
+  },
+  {
+    id: "cu2",
+    nombre: "Equipo Albufera",
+    responsable: "Noelia Server",
+    integrantes: ["Noelia Server", "Youssef Amrani", "Pau Benet"],
+    zona: "Campanar / Benimaclet",
+    disponibilidad: "L-S · 15:00 a 22:00",
+    color: "#58c2a0",
+    pin: "2222",
+    activa: true,
+  },
+];
+
+const CUADRILLAS_EM3: CuadrillaSemilla[] = [
+  {
+    id: "cu1",
+    nombre: "Talde Berdea",
+    responsable: "Ainhoa Zubiri",
+    integrantes: ["Ainhoa Zubiri", "Gorka Etxeberria"],
+    zona: "Abando / Indautxu",
+    disponibilidad: "L-V · 07:30 a 15:30",
+    color: "#4a91c6",
+    pin: "1111",
+    activa: true,
+  },
+];
+
+/* ---------------- Clientes por tenant ---------------- */
+
+const CLIENTES_EM1: ClienteSemilla[] = [
   {
     id: "cl1",
     nombre: "Familia Álvarez Ruiz",
@@ -204,163 +286,320 @@ const CLIENTES: Cliente[] = [
   },
 ];
 
-function servicio(
-  id: string,
-  clienteId: string,
-  cuadrillaId: string,
-  fecha: string,
-  hora: string,
-  estado: Servicio["estado"],
-  extra: Partial<Servicio> = {},
-): Servicio {
-  const cliente = CLIENTES.find((c) => c.id === clienteId)!;
-  const checklist = plantillaChecklist(cliente.tipo).map((t) => ({
-    ...t,
-    hecha: estado === "completado",
-  }));
-  return {
-    id,
-    clienteId,
-    cuadrillaId,
-    fecha,
-    hora,
-    duracion: cliente.tipo === "oficina" ? 3 : 2,
-    estado,
-    checklist,
-    importe: cliente.tarifa,
-    ...extra,
-  };
+const CLIENTES_EM2: ClienteSemilla[] = [
+  {
+    id: "cl1",
+    nombre: "Apartamentos Turia Stay",
+    contacto: "Sonia Cebrián",
+    telefono: "963 118 240",
+    email: "reservas@turiastay.com",
+    tipo: "hogar",
+    direccion: "C/ Cuba 32, 1ª y 2ª planta",
+    zona: "Ruzafa",
+    metros: 190,
+    frecuencia: "semanal",
+    tarifa: 130,
+    acceso: { portero: "Sin portero", llaves: "Caja fuerte de llaves · código 3390", alarma: "Sin alarma", notas: "Limpieza entre check-outs, antes de las 15:00" },
+    cuadrillaId: "cu1",
+    activo: true,
+    alta: "2025-12-20",
+  },
+  {
+    id: "cl2",
+    nombre: "Gestoría Bonaire",
+    contacto: "Rafa Server",
+    telefono: "961 442 077",
+    email: "info@gestoriabonaire.es",
+    tipo: "oficina",
+    direccion: "C/ Colón 18, planta 4",
+    zona: "Eixample",
+    metros: 210,
+    frecuencia: "semanal",
+    tarifa: 135,
+    acceso: { portero: "Conserje de 8 a 19h", llaves: "Juego propio de la empresa", alarma: "Código 7712", notas: "No tocar archivadores abiertos" },
+    cuadrillaId: "cu1",
+    activo: true,
+    alta: "2026-01-08",
+  },
+  {
+    id: "cl3",
+    nombre: "Familia Ferrandis Gil",
+    contacto: "Empar Gil",
+    telefono: "622 780 145",
+    email: "empar.gil@correo.es",
+    tipo: "hogar",
+    direccion: "Av. Blasco Ibáñez 90, 5ºD",
+    zona: "Benimaclet",
+    metros: 96,
+    frecuencia: "quincenal",
+    tarifa: 72,
+    acceso: { portero: "Sin portero", llaves: "Copia en oficina · llavero 11", alarma: "Sin alarma", notas: "Dos gatos en casa" },
+    cuadrillaId: "cu2",
+    activo: true,
+    alta: "2026-02-02",
+  },
+  {
+    id: "cl4",
+    nombre: "Escuela Infantil Petit Sol",
+    contacto: "Marina Tortosa",
+    telefono: "960 335 891",
+    email: "direccion@petitsol.es",
+    tipo: "oficina",
+    direccion: "C/ Campanar 41",
+    zona: "Campanar",
+    metros: 320,
+    frecuencia: "semanal",
+    tarifa: 190,
+    acceso: { portero: "Sin portero", llaves: "Llave y mando de garaje", alarma: "Alarma propia · código 5104", notas: "Solo productos con certificado infantil" },
+    cuadrillaId: "cu2",
+    activo: true,
+    alta: "2026-03-16",
+  },
+  {
+    id: "cl5",
+    nombre: "Clínica Fisio Marítim",
+    contacto: "Hugo Serrano",
+    telefono: "963 907 412",
+    email: "hola@fisiomaritim.com",
+    tipo: "oficina",
+    direccion: "C/ Reina 122, bajo",
+    zona: "Poblats Marítims",
+    metros: 140,
+    frecuencia: "mensual",
+    tarifa: 110,
+    acceso: { portero: "Sin portero", llaves: "Cliente abre la puerta", alarma: "Sin alarma", notas: "Desinfección de camillas incluida" },
+    cuadrillaId: "cu1",
+    activo: true,
+    alta: "2026-05-04",
+  },
+];
+
+const CLIENTES_EM3: ClienteSemilla[] = [
+  {
+    id: "cl1",
+    nombre: "Despacho Uribe Abogados",
+    contacto: "Miren Uribe",
+    telefono: "944 221 780",
+    email: "secretaria@uribeabogados.eus",
+    tipo: "oficina",
+    direccion: "Gran Vía 42, planta 3",
+    zona: "Abando",
+    metros: 170,
+    frecuencia: "semanal",
+    tarifa: 125,
+    acceso: { portero: "Recepción del edificio", llaves: "Tarjeta nº 7", alarma: "Alarma central", notas: "Entrar a partir de las 20:00" },
+    cuadrillaId: "cu1",
+    activo: true,
+    alta: "2026-08-12",
+  },
+  {
+    id: "cl2",
+    nombre: "Familia Larrea Goikoetxea",
+    contacto: "Unai Larrea",
+    telefono: "688 512 903",
+    email: "unai.larrea@correo.eus",
+    tipo: "hogar",
+    direccion: "C/ Autonomía 25, 4ºC",
+    zona: "Indautxu",
+    metros: 112,
+    frecuencia: "quincenal",
+    tarifa: 78,
+    acceso: { portero: "Portera por las mañanas", llaves: "Copia en oficina · llavero 02", alarma: "Sin alarma", notas: "Terraza incluida en verano" },
+    cuadrillaId: "cu1",
+    activo: true,
+    alta: "2026-08-20",
+  },
+  {
+    id: "cl3",
+    nombre: "Taberna Getxo Berri",
+    contacto: "Aitor Basterra",
+    telefono: "946 330 118",
+    email: "aitor@getxoberri.eus",
+    tipo: "oficina",
+    direccion: "Muelle Ereaga 4",
+    zona: "Getxo",
+    metros: 150,
+    frecuencia: "puntual",
+    tarifa: 165,
+    acceso: { portero: "Sin portero", llaves: "Llave entregada por el encargado", alarma: "Sin alarma", notas: "Limpieza de cocina industrial" },
+    cuadrillaId: "cu1",
+    activo: true,
+    alta: "2026-08-28",
+  },
+];
+
+/* ---------------- Generación de servicios y facturas ---------------- */
+
+interface PlanServicio {
+  id: string;
+  clienteId: string;
+  cuadrillaId: string;
+  offset: number;
+  hora: string;
+  estado: Servicio["estado"];
+  extra?: Partial<Omit<Servicio, "tenantId">>;
+}
+
+function construirServicios(
+  tenantId: string,
+  clientes: ClienteSemilla[],
+  plan: PlanServicio[],
+): Servicio[] {
+  return plan.map((p) => {
+    const cliente = clientes.find((c) => c.id === p.clienteId)!;
+    const checklist = plantillaChecklist(cliente.tipo).map((t) => ({
+      ...t,
+      hecha: p.estado === "completado",
+    }));
+    return {
+      id: p.id,
+      tenantId,
+      clienteId: p.clienteId,
+      cuadrillaId: p.cuadrillaId,
+      fecha: dias(p.offset),
+      hora: p.hora,
+      duracion: cliente.tipo === "oficina" ? 3 : 2,
+      estado: p.estado,
+      checklist,
+      importe: cliente.tarifa,
+      ...p.extra,
+    } as Servicio;
+  });
+}
+
+function periodoAnterior() {
+  const hoy = new Date();
+  const m = new Date(hoy.getFullYear(), hoy.getMonth() - 1, 1);
+  return `${m.getFullYear()}-${String(m.getMonth() + 1).padStart(2, "0")}`;
+}
+
+/** Agrupa por cliente los servicios indicados y crea una factura por cliente. */
+function construirFacturas(
+  tenantId: string,
+  servicios: Servicio[],
+  ids: string[],
+  pagadas: string[],
+): Factura[] {
+  const periodo = periodoAnterior();
+  const porCliente = new Map<string, Servicio[]>();
+  ids.forEach((id) => {
+    const s = servicios.find((x) => x.id === id);
+    if (!s) return;
+    const lista = porCliente.get(s.clienteId) ?? [];
+    lista.push(s);
+    porCliente.set(s.clienteId, lista);
+  });
+
+  const facturas: Factura[] = [];
+  let n = 0;
+  porCliente.forEach((lista, clienteId) => {
+    n += 1;
+    const base = redondear(lista.reduce((t, s) => t + s.importe, 0));
+    const iva = redondear(base * 0.21);
+    const pagada = pagadas.includes(clienteId);
+    const factura: Factura = {
+      id: `${tenantId}-f${n}`,
+      tenantId,
+      numero: `${tenantId.toUpperCase()}-${periodo.replace("-", "")}-${String(n).padStart(3, "0")}`,
+      clienteId,
+      periodo,
+      emision: dias(-20),
+      vencimiento: dias(-5 + n),
+      servicios: lista.map((s) => s.id),
+      base,
+      iva,
+      total: redondear(base + iva),
+      estado: pagada ? "pagada" : "pendiente",
+      ...(pagada ? { pagadaEl: dias(-6) } : {}),
+    };
+    facturas.push(factura);
+    lista.forEach((s) => {
+      s.facturaId = factura.id;
+    });
+  });
+  return facturas;
+}
+
+const PLAN_EM1: PlanServicio[] = [
+  { id: "s1", clienteId: "cl1", cuadrillaId: "cu1", offset: -14, hora: "09:00", estado: "completado", extra: { valoracion: { puntuacion: 5, comentario: "Impecable, como siempre.", fecha: dias(-14) } } },
+  { id: "s2", clienteId: "cl2", cuadrillaId: "cu1", offset: -12, hora: "19:30", estado: "completado", extra: { valoracion: { puntuacion: 4, comentario: "Muy bien, faltó vaciar una papelera.", fecha: dias(-12) } } },
+  { id: "s3", clienteId: "cl3", cuadrillaId: "cu2", offset: -10, hora: "20:00", estado: "completado", extra: { valoracion: { puntuacion: 5, comentario: "Excelente desinfección.", fecha: dias(-10) } } },
+  { id: "s4", clienteId: "cl5", cuadrillaId: "cu3", offset: -9, hora: "07:00", estado: "completado", extra: { valoracion: { puntuacion: 4, fecha: dias(-9) } } },
+  { id: "s5", clienteId: "cl4", cuadrillaId: "cu2", offset: -7, hora: "15:00", estado: "completado", extra: { valoracion: { puntuacion: 5, comentario: "Muy puntuales.", fecha: dias(-7) } } },
+  { id: "s6", clienteId: "cl1", cuadrillaId: "cu1", offset: -7, hora: "09:00", estado: "completado" },
+  { id: "s7", clienteId: "cl6", cuadrillaId: "cu3", offset: -5, hora: "08:00", estado: "completado", extra: { valoracion: { puntuacion: 3, comentario: "Se olvidaron los cristales de la terraza.", fecha: dias(-5) } } },
+  { id: "s8", clienteId: "cl2", cuadrillaId: "cu1", offset: -4, hora: "19:30", estado: "completado" },
+  { id: "s9", clienteId: "cl3", cuadrillaId: "cu2", offset: -3, hora: "20:00", estado: "completado", extra: { valoracion: { puntuacion: 5, fecha: dias(-3) } } },
+  { id: "s10", clienteId: "cl5", cuadrillaId: "cu3", offset: -2, hora: "07:00", estado: "completado" },
+  { id: "s11", clienteId: "cl1", cuadrillaId: "cu1", offset: 0, hora: "09:00", estado: "en_curso", extra: { notas: "Cliente pide especial atención a la cocina." } },
+  { id: "s12", clienteId: "cl2", cuadrillaId: "cu1", offset: 0, hora: "19:30", estado: "pendiente" },
+  { id: "s13", clienteId: "cl3", cuadrillaId: "cu2", offset: 0, hora: "20:00", estado: "pendiente" },
+  { id: "s14", clienteId: "cl5", cuadrillaId: "cu3", offset: 0, hora: "07:00", estado: "completado" },
+  { id: "s15", clienteId: "cl4", cuadrillaId: "cu2", offset: 0, hora: "15:00", estado: "pendiente" },
+  { id: "s16", clienteId: "cl6", cuadrillaId: "cu3", offset: 1, hora: "08:00", estado: "pendiente" },
+  { id: "s17", clienteId: "cl2", cuadrillaId: "cu1", offset: 2, hora: "19:30", estado: "pendiente" },
+  { id: "s18", clienteId: "cl1", cuadrillaId: "cu1", offset: 3, hora: "09:00", estado: "pendiente" },
+  { id: "s19", clienteId: "cl7", cuadrillaId: "cu2", offset: 3, hora: "17:00", estado: "pendiente", extra: { notas: "Servicio puntual: limpieza de cristales." } },
+  { id: "s20", clienteId: "cl5", cuadrillaId: "cu3", offset: 4, hora: "07:00", estado: "pendiente" },
+  { id: "s21", clienteId: "cl3", cuadrillaId: "cu2", offset: 5, hora: "20:00", estado: "pendiente" },
+  { id: "s22", clienteId: "cl4", cuadrillaId: "cu2", offset: 6, hora: "15:00", estado: "pendiente" },
+];
+
+const PLAN_EM2: PlanServicio[] = [
+  { id: "s1", clienteId: "cl1", cuadrillaId: "cu1", offset: -13, hora: "11:00", estado: "completado", extra: { valoracion: { puntuacion: 5, comentario: "Los apartamentos quedaron perfectos.", fecha: dias(-13) } } },
+  { id: "s2", clienteId: "cl2", cuadrillaId: "cu1", offset: -11, hora: "20:00", estado: "completado", extra: { valoracion: { puntuacion: 4, fecha: dias(-11) } } },
+  { id: "s3", clienteId: "cl4", cuadrillaId: "cu2", offset: -9, hora: "17:00", estado: "completado", extra: { valoracion: { puntuacion: 5, comentario: "Muy cuidadosos con el material infantil.", fecha: dias(-9) } } },
+  { id: "s4", clienteId: "cl3", cuadrillaId: "cu2", offset: -8, hora: "16:00", estado: "completado" },
+  { id: "s5", clienteId: "cl1", cuadrillaId: "cu1", offset: -6, hora: "11:00", estado: "completado", extra: { valoracion: { puntuacion: 4, comentario: "Buen trabajo, un poco tarde.", fecha: dias(-6) } } },
+  { id: "s6", clienteId: "cl2", cuadrillaId: "cu1", offset: -4, hora: "20:00", estado: "completado" },
+  { id: "s7", clienteId: "cl5", cuadrillaId: "cu1", offset: -2, hora: "09:00", estado: "completado", extra: { valoracion: { puntuacion: 3, comentario: "Faltó repasar la sala 2.", fecha: dias(-2) } } },
+  { id: "s8", clienteId: "cl1", cuadrillaId: "cu1", offset: 0, hora: "11:00", estado: "en_curso" },
+  { id: "s9", clienteId: "cl4", cuadrillaId: "cu2", offset: 0, hora: "17:00", estado: "pendiente" },
+  { id: "s10", clienteId: "cl2", cuadrillaId: "cu1", offset: 1, hora: "20:00", estado: "pendiente" },
+  { id: "s11", clienteId: "cl3", cuadrillaId: "cu2", offset: 2, hora: "16:00", estado: "pendiente", extra: { notas: "Avisar antes de subir, hay gatos." } },
+  { id: "s12", clienteId: "cl4", cuadrillaId: "cu2", offset: 4, hora: "17:00", estado: "pendiente" },
+  { id: "s13", clienteId: "cl1", cuadrillaId: "cu1", offset: 5, hora: "11:00", estado: "pendiente" },
+];
+
+const PLAN_EM3: PlanServicio[] = [
+  { id: "s1", clienteId: "cl1", cuadrillaId: "cu1", offset: -6, hora: "20:00", estado: "completado", extra: { valoracion: { puntuacion: 5, comentario: "Primera limpieza y muy contentos.", fecha: dias(-6) } } },
+  { id: "s2", clienteId: "cl2", cuadrillaId: "cu1", offset: -4, hora: "09:30", estado: "completado" },
+  { id: "s3", clienteId: "cl1", cuadrillaId: "cu1", offset: -1, hora: "20:00", estado: "completado", extra: { valoracion: { puntuacion: 4, fecha: dias(-1) } } },
+  { id: "s4", clienteId: "cl3", cuadrillaId: "cu1", offset: 0, hora: "12:00", estado: "pendiente", extra: { notas: "Servicio puntual de cocina industrial." } },
+  { id: "s5", clienteId: "cl1", cuadrillaId: "cu1", offset: 2, hora: "20:00", estado: "pendiente" },
+  { id: "s6", clienteId: "cl2", cuadrillaId: "cu1", offset: 3, hora: "09:30", estado: "pendiente" },
+];
+
+function conTenant<T extends object>(tenantId: string, filas: T[]): (T & { tenantId: string })[] {
+  return filas.map((f) => ({ ...f, tenantId }));
 }
 
 export function crearDemo(): NitidiaDB {
-  const servicios: Servicio[] = [
-    // Pasado (completados y valorados)
-    servicio("s1", "cl1", "cu1", dias(-14), "09:00", "completado", {
-      valoracion: { puntuacion: 5, comentario: "Impecable, como siempre.", fecha: dias(-14) },
-    }),
-    servicio("s2", "cl2", "cu1", dias(-12), "19:30", "completado", {
-      valoracion: { puntuacion: 4, comentario: "Muy bien, faltó vaciar una papelera.", fecha: dias(-12) },
-    }),
-    servicio("s3", "cl3", "cu2", dias(-10), "20:00", "completado", {
-      valoracion: { puntuacion: 5, comentario: "Excelente desinfección.", fecha: dias(-10) },
-    }),
-    servicio("s4", "cl5", "cu3", dias(-9), "07:00", "completado", {
-      valoracion: { puntuacion: 4, fecha: dias(-9) },
-    }),
-    servicio("s5", "cl4", "cu2", dias(-7), "15:00", "completado", {
-      valoracion: { puntuacion: 5, comentario: "Muy puntuales.", fecha: dias(-7) },
-    }),
-    servicio("s6", "cl1", "cu1", dias(-7), "09:00", "completado"),
-    servicio("s7", "cl6", "cu3", dias(-5), "08:00", "completado", {
-      valoracion: { puntuacion: 3, comentario: "Se olvidaron los cristales de la terraza.", fecha: dias(-5) },
-    }),
-    servicio("s8", "cl2", "cu1", dias(-4), "19:30", "completado"),
-    servicio("s9", "cl3", "cu2", dias(-3), "20:00", "completado", {
-      valoracion: { puntuacion: 5, fecha: dias(-3) },
-    }),
-    servicio("s10", "cl5", "cu3", dias(-2), "07:00", "completado"),
-
-    // Hoy
-    servicio("s11", "cl1", "cu1", dias(0), "09:00", "en_curso", { notas: "Cliente pide especial atención a la cocina." }),
-    servicio("s12", "cl2", "cu1", dias(0), "19:30", "pendiente"),
-    servicio("s13", "cl3", "cu2", dias(0), "20:00", "pendiente"),
-    servicio("s14", "cl5", "cu3", dias(0), "07:00", "completado"),
-    servicio("s15", "cl4", "cu2", dias(0), "15:00", "pendiente"),
-
-    // Próximos días
-    servicio("s16", "cl6", "cu3", dias(1), "08:00", "pendiente"),
-    servicio("s17", "cl2", "cu1", dias(2), "19:30", "pendiente"),
-    servicio("s18", "cl1", "cu1", dias(3), "09:00", "pendiente"),
-    servicio("s19", "cl7", "cu2", dias(3), "17:00", "pendiente", { notas: "Servicio puntual: limpieza de cristales." }),
-    servicio("s20", "cl5", "cu3", dias(4), "07:00", "pendiente"),
-    servicio("s21", "cl3", "cu2", dias(5), "20:00", "pendiente"),
-    servicio("s22", "cl4", "cu2", dias(6), "15:00", "pendiente"),
+  const clientes: Cliente[] = [
+    ...conTenant("em1", CLIENTES_EM1.map((c) => ({ ...c, acceso: { ...c.acceso } }))),
+    ...conTenant("em2", CLIENTES_EM2.map((c) => ({ ...c, acceso: { ...c.acceso } }))),
+    ...conTenant("em3", CLIENTES_EM3.map((c) => ({ ...c, acceso: { ...c.acceso } }))),
+  ];
+  const cuadrillas: Cuadrilla[] = [
+    ...conTenant("em1", CUADRILLAS_EM1.map((c) => ({ ...c, integrantes: [...c.integrantes] }))),
+    ...conTenant("em2", CUADRILLAS_EM2.map((c) => ({ ...c, integrantes: [...c.integrantes] }))),
+    ...conTenant("em3", CUADRILLAS_EM3.map((c) => ({ ...c, integrantes: [...c.integrantes] }))),
   ];
 
-  const hoy = new Date();
-  const mesAnterior = new Date(hoy.getFullYear(), hoy.getMonth() - 1, 1);
-  const periodoAnt = `${mesAnterior.getFullYear()}-${String(mesAnterior.getMonth() + 1).padStart(2, "0")}`;
+  const serv1 = construirServicios("em1", CLIENTES_EM1, PLAN_EM1);
+  const serv2 = construirServicios("em2", CLIENTES_EM2, PLAN_EM2);
+  const serv3 = construirServicios("em3", CLIENTES_EM3, PLAN_EM3);
 
-  const facturas: Factura[] = [
-    {
-      id: "f1",
-      numero: `NIT-${periodoAnt.replace("-", "")}-001`,
-      clienteId: "cl1",
-      periodo: periodoAnt,
-      emision: dias(-20),
-      vencimiento: dias(-5),
-      servicios: ["s1", "s6"],
-      base: 136,
-      iva: 28.56,
-      total: 164.56,
-      estado: "pagada",
-      pagadaEl: dias(-8),
-    },
-    {
-      id: "f2",
-      numero: `NIT-${periodoAnt.replace("-", "")}-002`,
-      clienteId: "cl2",
-      periodo: periodoAnt,
-      emision: dias(-20),
-      vencimiento: dias(-5),
-      servicios: ["s2", "s8"],
-      base: 290,
-      iva: 60.9,
-      total: 350.9,
-      estado: "pagada",
-      pagadaEl: dias(-6),
-    },
-    {
-      id: "f3",
-      numero: `NIT-${periodoAnt.replace("-", "")}-003`,
-      clienteId: "cl3",
-      periodo: periodoAnt,
-      emision: dias(-18),
-      vencimiento: dias(-3),
-      servicios: ["s3", "s9"],
-      base: 240,
-      iva: 50.4,
-      total: 290.4,
-      estado: "pendiente",
-    },
-    {
-      id: "f4",
-      numero: `NIT-${periodoAnt.replace("-", "")}-004`,
-      clienteId: "cl5",
-      periodo: periodoAnt,
-      emision: dias(-18),
-      vencimiento: dias(2),
-      servicios: ["s4", "s10"],
-      base: 420,
-      iva: 88.2,
-      total: 508.2,
-      estado: "pendiente",
-    },
-    {
-      id: "f5",
-      numero: `NIT-${periodoAnt.replace("-", "")}-005`,
-      clienteId: "cl4",
-      periodo: periodoAnt,
-      emision: dias(-15),
-      vencimiento: dias(0),
-      servicios: ["s5"],
-      base: 82,
-      iva: 17.22,
-      total: 99.22,
-      estado: "pendiente",
-    },
-  ];
-
-  servicios.forEach((s) => {
-    const f = facturas.find((x) => x.servicios.includes(s.id));
-    if (f) s.facturaId = f.id;
-  });
+  const fact1 = construirFacturas("em1", serv1, ["s1", "s6", "s2", "s8", "s3", "s9", "s4", "s10", "s5"], ["cl1", "cl2"]);
+  const fact2 = construirFacturas("em2", serv2, ["s1", "s5", "s2", "s6", "s3", "s4"], ["cl1"]);
+  const fact3 = construirFacturas("em3", serv3, ["s1", "s2"], []);
 
   return {
-    version: 1,
-    clientes: CLIENTES.map((c) => ({ ...c, acceso: { ...c.acceso } })),
-    cuadrillas: CUADRILLAS.map((c) => ({ ...c, integrantes: [...c.integrantes] })),
-    servicios,
-    facturas,
+    version: 2,
+    empresas: EMPRESAS.map((e) => ({ ...e })),
+    clientes,
+    cuadrillas,
+    servicios: [...serv1, ...serv2, ...serv3],
+    facturas: [...fact1, ...fact2, ...fact3],
   };
 }
