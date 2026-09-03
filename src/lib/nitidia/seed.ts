@@ -61,6 +61,7 @@ export const EMPRESAS: Empresa[] = [
     plan: "pro",
     alta: "2025-09-01",
     activo: true,
+    pinAdmin: "1234",
   },
   {
     id: "em2",
@@ -70,6 +71,7 @@ export const EMPRESAS: Empresa[] = [
     plan: "starter",
     alta: "2025-12-14",
     activo: true,
+    pinAdmin: "2345",
   },
   {
     id: "em3",
@@ -79,6 +81,7 @@ export const EMPRESAS: Empresa[] = [
     plan: "prueba",
     alta: "2026-08-11",
     activo: true,
+    pinAdmin: "3456",
   },
 ];
 
@@ -452,10 +455,10 @@ function construirServicios(
       hecha: p.estado === "completado",
     }));
     return {
-      id: p.id,
+      id: `${tenantId}-${p.id}`,
       tenantId,
-      clienteId: p.clienteId,
-      cuadrillaId: p.cuadrillaId,
+      clienteId: `${tenantId}-${p.clienteId}`,
+      cuadrillaId: `${tenantId}-${p.cuadrillaId}`,
       fecha: dias(p.offset),
       hora: p.hora,
       duracion: cliente.tipo === "oficina" ? 3 : 2,
@@ -483,7 +486,7 @@ function construirFacturas(
   const periodo = periodoAnterior();
   const porCliente = new Map<string, Servicio[]>();
   ids.forEach((id) => {
-    const s = servicios.find((x) => x.id === id);
+    const s = servicios.find((x) => x.id === `${tenantId}-${id}`);
     if (!s) return;
     const lista = porCliente.get(s.clienteId) ?? [];
     lista.push(s);
@@ -496,7 +499,7 @@ function construirFacturas(
     n += 1;
     const base = redondear(lista.reduce((t, s) => t + s.importe, 0));
     const iva = redondear(base * 0.21);
-    const pagada = pagadas.includes(clienteId);
+    const pagada = pagadas.some((c) => `${tenantId}-${c}` === clienteId);
     const factura: Factura = {
       id: `${tenantId}-f${n}`,
       tenantId,
@@ -570,8 +573,17 @@ const PLAN_EM3: PlanServicio[] = [
   { id: "s6", clienteId: "cl2", cuadrillaId: "cu1", offset: 3, hora: "09:30", estado: "pendiente" },
 ];
 
-function conTenant<T extends object>(tenantId: string, filas: T[]): (T & { tenantId: string })[] {
-  return filas.map((f) => ({ ...f, tenantId }));
+/** Sella el tenant y prefija los ids para que sean únicos entre empresas. */
+function conTenant<T extends { id: string; cuadrillaId?: string }>(
+  tenantId: string,
+  filas: T[],
+): (T & { tenantId: string })[] {
+  return filas.map((f) => ({
+    ...f,
+    id: `${tenantId}-${f.id}`,
+    ...(f.cuadrillaId ? { cuadrillaId: `${tenantId}-${f.cuadrillaId}` } : {}),
+    tenantId,
+  }));
 }
 
 export function crearDemo(): NitidiaDB {

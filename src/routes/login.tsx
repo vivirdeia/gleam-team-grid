@@ -1,52 +1,73 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
-import { ShieldCheck, Users, ArrowRight, CheckCircle2 } from "lucide-react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useMemo, useState } from "react";
+import { ShieldCheck, Users, ArrowRight, Building2, UserCog } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Logo } from "@/components/nitidia/ui";
-import { getDB, setSesion } from "@/lib/nitidia/store";
+import { Logo, Pill } from "@/components/nitidia/ui";
+import { getDB, setSesion, useDB } from "@/lib/nitidia/store";
+import { PLANES } from "@/lib/nitidia/types";
 
 export const Route = createFileRoute("/login")({
+  ssr: false,
   head: () => ({
     meta: [
-      { title: "Acceder a Nitidia · Plantilla SaaS para empresas de limpieza" },
+      { title: "Acceder a Nitidia · Software para empresas de limpieza" },
       {
         name: "description",
         content:
-          "Accede a la demo de Nitidia como super admin o como cuadrilla y gestiona clientes, servicios, checklists y facturación.",
+          "Entra en Nitidia como super admin del SaaS o como empresa cliente (admin o cuadrilla) y gestiona servicios, checklists y facturación.",
       },
       { property: "og:title", content: "Acceder a Nitidia" },
       {
         property: "og:description",
-        content: "Demo con datos realistas: clientes, cuadrillas, planificación, checklists y facturación.",
+        content: "Acceso demo con dos niveles: super admin del SaaS y usuarios de cada empresa cliente.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Login,
 });
 
+type Modo = "saas" | "empresa";
+
 function Login() {
   const navigate = useNavigate();
-  const cuadrillas = getDB().cuadrillas;
-  const [cuadrillaId, setCuadrillaId] = useState(cuadrillas[0]?.id ?? "");
+  const db = useDB();
+  const [modo, setModo] = useState<Modo>("empresa");
+  const [empresaId, setEmpresaId] = useState(() => getDB().empresas[0]?.id ?? "");
+  const [perfil, setPerfil] = useState<"admin" | string>("admin");
   const [pin, setPin] = useState("");
 
-  function entrarAdmin() {
-    setSesion({
-      nivel: "tenant",
-      tenantId: cuadrillas[0]?.tenantId ?? "em1",
-      rol: "admin",
-      nombre: "Elena Cortés",
-    });
-    toast.success("Bienvenida, Elena");
+  const empresa = db.empresas.find((e) => e.id === empresaId) ?? db.empresas[0];
+  const cuadrillas = useMemo(
+    () => db.cuadrillas.filter((c) => c.tenantId === empresa?.id),
+    [db.cuadrillas, empresa?.id],
+  );
+
+  function entrarSaas() {
+    setSesion({ nivel: "saas", nombre: "Equipo Nitidia", email: "admin@nitidia.app" });
+    toast.success("Sesión de super admin del SaaS");
     navigate({ to: "/app" });
   }
 
-  function entrarCuadrilla(e: React.FormEvent) {
+  function entrarEmpresa(e: React.FormEvent) {
     e.preventDefault();
-    const cu = cuadrillas.find((c) => c.id === cuadrillaId);
+    if (!empresa) return;
+    if (perfil === "admin") {
+      const esperado = empresa.pinAdmin ?? "0000";
+      if (pin.trim() !== esperado) {
+        toast.error("PIN de administración incorrecto");
+        return;
+      }
+      setSesion({ nivel: "tenant", tenantId: empresa.id, rol: "admin", nombre: empresa.nombre });
+      toast.success(`Bienvenido a ${empresa.nombre}`);
+      navigate({ to: "/app" });
+      return;
+    }
+    const cu = cuadrillas.find((c) => c.id === perfil);
     if (!cu) return;
     if (pin.trim() !== cu.pin) {
       toast.error("PIN incorrecto");
@@ -66,112 +87,195 @@ function Login() {
   return (
     <main className="fondo-fresco flex min-h-screen flex-col">
       <header className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-6">
-        <Logo />
+        <Link to="/">
+          <Logo />
+        </Link>
         <span className="text-xs font-medium text-muted-foreground">Demo · datos locales</span>
       </header>
 
-      <div className="mx-auto grid w-full max-w-6xl flex-1 items-center gap-10 px-6 pb-16 lg:grid-cols-2">
-        <section>
-          <p className="text-sm font-semibold tracking-wide text-primary uppercase">
-            Limpieza de hogares y oficinas
-          </p>
-          <h1 className="font-display mt-3 text-4xl leading-tight font-semibold text-foreground sm:text-5xl">
-            Toda tu operativa de limpieza, ordenada y brillante
-          </h1>
-          <p className="mt-4 max-w-lg text-base text-muted-foreground">
-            Nitidia reúne clientes y direcciones, cuadrillas, planificación diaria, checklists con
-            foto, valoraciones de cliente y facturación recurrente. Sin configuración: prueba la
-            demo ahora mismo.
-          </p>
-          <ul className="mt-6 space-y-2 text-sm text-foreground">
-            {[
-              "Clientes con datos de acceso y frecuencia contratada",
-              "Cuadrillas con zona, disponibilidad y carga de trabajo",
-              "Checklists por área con fotos y valoración del cliente",
-              "Facturación automática por periodo e historial de pagos",
-            ].map((t) => (
-              <li key={t} className="flex items-start gap-2">
-                <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-exito" />
-                {t}
-              </li>
-            ))}
-          </ul>
-        </section>
+      <div className="mx-auto w-full max-w-3xl flex-1 px-6 pb-16">
+        <h1 className="font-display text-3xl font-semibold text-foreground">Acceder a Nitidia</h1>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Elige tu nivel de acceso. Los datos se guardan solo en tu navegador.
+        </p>
 
-        <section className="superficie p-7">
-          <h2 className="font-display text-lg font-semibold">Acceso a la demo</h2>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Elige un rol. Los datos se guardan solo en tu navegador.
-          </p>
-
+        <div className="mt-6 grid gap-3 sm:grid-cols-2">
           <button
-            onClick={entrarAdmin}
-            className="mt-5 flex w-full items-center gap-3 rounded-xl border border-border bg-secondary/50 p-4 text-left transition-colors hover:bg-secondary"
+            type="button"
+            onClick={() => setModo("saas")}
+            className={`flex items-start gap-3 rounded-xl border p-4 text-left transition-colors ${
+              modo === "saas" ? "border-primary bg-primary/5" : "border-border hover:bg-muted/60"
+            }`}
           >
-            <span className="flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+            <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
               <ShieldCheck className="size-5" />
             </span>
-            <span className="flex-1">
-              <span className="block text-sm font-semibold">Entrar como super admin</span>
+            <span>
+              <span className="block text-sm font-semibold">Soy super admin del SaaS</span>
               <span className="block text-xs text-muted-foreground">
-                Vista global de clientes, cuadrillas, servicios y facturación
+                Vista global de todas las empresas suscritas
               </span>
             </span>
-            <ArrowRight className="size-4 text-muted-foreground" />
           </button>
+          <button
+            type="button"
+            onClick={() => setModo("empresa")}
+            className={`flex items-start gap-3 rounded-xl border p-4 text-left transition-colors ${
+              modo === "empresa" ? "border-primary bg-primary/5" : "border-border hover:bg-muted/60"
+            }`}
+          >
+            <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-secondary text-secondary-foreground">
+              <Building2 className="size-5" />
+            </span>
+            <span>
+              <span className="block text-sm font-semibold">Soy una empresa cliente</span>
+              <span className="block text-xs text-muted-foreground">
+                Entra como administración o como cuadrilla
+              </span>
+            </span>
+          </button>
+        </div>
 
-          <div className="my-6 flex items-center gap-3 text-xs text-muted-foreground">
-            <span className="h-px flex-1 bg-border" />o accede con tu cuadrilla
-            <span className="h-px flex-1 bg-border" />
-          </div>
+        {modo === "saas" ? (
+          <section className="superficie mt-6 p-7">
+            <h2 className="font-display text-lg font-semibold">Panel del SaaS</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Accede sin tenant asignado: verás las {db.empresas.length} empresas registradas, su
+              plan y su actividad.
+            </p>
+            <ul className="mt-4 grid gap-2">
+              {db.empresas.map((e) => (
+                <li
+                  key={e.id}
+                  className="flex items-center justify-between rounded-lg border border-border p-3 text-sm"
+                >
+                  <span className="font-medium">{e.nombre}</span>
+                  <Pill tono={e.plan === "pro" ? "verde" : e.plan === "starter" ? "azul" : "ambar"}>
+                    {PLANES[e.plan].etiqueta}
+                  </Pill>
+                </li>
+              ))}
+            </ul>
+            <Button onClick={entrarSaas} className="mt-5 w-full group">
+              Entrar como super admin
+              <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
+            </Button>
+          </section>
+        ) : (
+          <section className="superficie mt-6 p-7">
+            <h2 className="font-display text-lg font-semibold">Acceso de empresa cliente</h2>
+            <form onSubmit={entrarEmpresa} className="mt-5 space-y-5">
+              <div className="space-y-2">
+                <Label>Empresa</Label>
+                <div className="grid gap-2">
+                  {db.empresas.map((e) => (
+                    <button
+                      key={e.id}
+                      type="button"
+                      onClick={() => {
+                        setEmpresaId(e.id);
+                        setPerfil("admin");
+                        setPin("");
+                      }}
+                      className={`flex items-center gap-3 rounded-lg border p-3 text-left text-sm transition-colors ${
+                        empresa?.id === e.id
+                          ? "border-primary bg-primary/5"
+                          : "border-border hover:bg-muted/60"
+                      }`}
+                    >
+                      <span className="flex-1">
+                        <span className="block font-medium">{e.nombre}</span>
+                        <span className="block text-xs text-muted-foreground">{e.emailContacto}</span>
+                      </span>
+                      <Pill tono={e.plan === "pro" ? "verde" : e.plan === "starter" ? "azul" : "ambar"}>
+                        {PLANES[e.plan].etiqueta}
+                      </Pill>
+                    </button>
+                  ))}
+                </div>
+              </div>
 
-          <form onSubmit={entrarCuadrilla} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="cuadrilla">Cuadrilla</Label>
-              <div className="grid gap-2">
-                {cuadrillas.map((c) => (
+              <div className="space-y-2">
+                <Label>Perfil</Label>
+                <div className="grid gap-2">
                   <button
-                    key={c.id}
                     type="button"
-                    onClick={() => setCuadrillaId(c.id)}
+                    onClick={() => {
+                      setPerfil("admin");
+                      setPin("");
+                    }}
                     className={`flex items-center gap-3 rounded-lg border p-3 text-left text-sm transition-colors ${
-                      cuadrillaId === c.id
+                      perfil === "admin"
                         ? "border-primary bg-primary/5"
                         : "border-border hover:bg-muted/60"
                     }`}
                   >
-                    <span
-                      className="size-3 rounded-full"
-                      style={{ backgroundColor: c.color }}
-                      aria-hidden
-                    />
+                    <UserCog className="size-4 text-primary" />
                     <span className="flex-1">
-                      <span className="block font-medium">{c.nombre}</span>
-                      <span className="block text-xs text-muted-foreground">{c.zona}</span>
+                      <span className="block font-medium">Administración</span>
+                      <span className="block text-xs text-muted-foreground">
+                        Clientes, cuadrillas, planificación y facturación
+                      </span>
                     </span>
-                    <Users className="size-4 text-muted-foreground" />
                   </button>
-                ))}
+                  {cuadrillas.map((c) => (
+                    <button
+                      key={c.id}
+                      type="button"
+                      onClick={() => {
+                        setPerfil(c.id);
+                        setPin("");
+                      }}
+                      className={`flex items-center gap-3 rounded-lg border p-3 text-left text-sm transition-colors ${
+                        perfil === c.id
+                          ? "border-primary bg-primary/5"
+                          : "border-border hover:bg-muted/60"
+                      }`}
+                    >
+                      <span
+                        className="size-3 rounded-full"
+                        style={{ backgroundColor: c.color }}
+                        aria-hidden
+                      />
+                      <span className="flex-1">
+                        <span className="block font-medium">{c.nombre}</span>
+                        <span className="block text-xs text-muted-foreground">{c.zona}</span>
+                      </span>
+                      <Users className="size-4 text-muted-foreground" />
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="pin">PIN de acceso</Label>
-              <Input
-                id="pin"
-                inputMode="numeric"
-                placeholder="4 dígitos"
-                value={pin}
-                onChange={(e) => setPin(e.target.value)}
-              />
-              <p className="text-xs text-muted-foreground">
-                PIN demo: Azul 1111 · Menta 2222 · Aurora 3333
-              </p>
-            </div>
-            <Button type="submit" className="w-full">
-              Entrar como cuadrilla
-            </Button>
-          </form>
-        </section>
+
+              <div className="space-y-2">
+                <Label htmlFor="pin">PIN de acceso</Label>
+                <Input
+                  id="pin"
+                  inputMode="numeric"
+                  placeholder="4 dígitos"
+                  value={pin}
+                  onChange={(e) => setPin(e.target.value)}
+                />
+                <p className="text-xs text-muted-foreground">
+                  {perfil === "admin"
+                    ? `PIN de administración de ${empresa?.nombre ?? "la empresa"}: ${empresa?.pinAdmin ?? "0000"}`
+                    : "PIN demo de cuadrillas: 1111 · 2222 · 3333"}
+                </p>
+              </div>
+
+              <Button type="submit" className="w-full">
+                Entrar
+              </Button>
+            </form>
+          </section>
+        )}
+
+        <p className="mt-6 text-center text-sm text-muted-foreground">
+          ¿Aún no tienes cuenta?{" "}
+          <Link to="/registro" className="font-medium text-primary hover:underline">
+            Crea tu empresa gratis
+          </Link>
+        </p>
       </div>
     </main>
   );

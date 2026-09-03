@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as RegistroRouteImport } from './routes/registro'
 import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as AppClientesRouteImport } from './routes/app.clientes'
 import { Route as AppCuadrillasRouteImport } from './routes/app.cuadrillas'
@@ -34,6 +35,11 @@ const AppRoute = AppRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RegistroRoute = RegistroRouteImport.update({
+  id: '/registro',
+  path: '/registro',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppIndexRoute = AppIndexRouteImport.update({
@@ -81,6 +87,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
+  '/registro': typeof RegistroRoute
   '/app/clientes': typeof AppClientesRoute
   '/app/cuadrillas': typeof AppCuadrillasRoute
   '/app/facturacion': typeof AppFacturacionRoute
@@ -93,6 +100,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/registro': typeof RegistroRoute
   '/app/clientes': typeof AppClientesRoute
   '/app/cuadrillas': typeof AppCuadrillasRoute
   '/app/facturacion': typeof AppFacturacionRoute
@@ -107,6 +115,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
+  '/registro': typeof RegistroRoute
   '/app/clientes': typeof AppClientesRoute
   '/app/cuadrillas': typeof AppCuadrillasRoute
   '/app/facturacion': typeof AppFacturacionRoute
@@ -122,6 +131,7 @@ export interface FileRouteTypes {
     | '/'
     | '/app'
     | '/login'
+    | '/registro'
     | '/app/clientes'
     | '/app/cuadrillas'
     | '/app/facturacion'
@@ -134,6 +144,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/login'
+    | '/registro'
     | '/app/clientes'
     | '/app/cuadrillas'
     | '/app/facturacion'
@@ -147,6 +158,7 @@ export interface FileRouteTypes {
     | '/'
     | '/app'
     | '/login'
+    | '/registro'
     | '/app/clientes'
     | '/app/cuadrillas'
     | '/app/facturacion'
@@ -161,6 +173,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppRoute: typeof AppRouteWithChildren
   LoginRoute: typeof LoginRoute
+  RegistroRoute: typeof RegistroRoute
   ValorarIdRoute: typeof ValorarIdRoute
 }
 
@@ -185,6 +198,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/registro': {
+      id: '/registro'
+      path: '/registro'
+      fullPath: '/registro'
+      preLoaderRoute: typeof RegistroRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/app/': {
@@ -272,6 +292,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppRoute: AppRouteWithChildren,
   LoginRoute: LoginRoute,
+  RegistroRoute: RegistroRoute,
   ValorarIdRoute: ValorarIdRoute,
 }
 export const routeTree = rootRouteImport

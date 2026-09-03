@@ -179,7 +179,7 @@ function Landing() {
               <Link to="/login">Iniciar sesión</Link>
             </Button>
             <Button asChild size="sm" className="transition-transform hover:-translate-y-0.5">
-              <Link to="/login">Empieza gratis</Link>
+              <Link to="/registro">Empieza gratis</Link>
             </Button>
           </div>
         </div>
@@ -210,7 +210,7 @@ function Landing() {
               </p>
               <div className="mt-8 flex flex-wrap items-center gap-3">
                 <Button asChild size="lg" className="group transition-transform hover:-translate-y-0.5">
-                  <Link to="/login">
+                  <Link to="/registro">
                     Empieza gratis
                     <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
                   </Link>
@@ -468,7 +468,7 @@ function Landing() {
                         className="mt-7 transition-transform hover:-translate-y-0.5"
                         variant={detalle.destacado ? "default" : "outline"}
                       >
-                        <Link to="/login">
+                        <Link to="/registro">
                           {plan.precio === 0 ? "Empieza gratis" : `Elegir ${plan.etiqueta}`}
                         </Link>
                       </Button>
@@ -540,7 +540,7 @@ function Landing() {
                 </p>
                 <div className="mt-7 flex flex-wrap justify-center gap-3">
                   <Button asChild size="lg" className="group transition-transform hover:-translate-y-0.5">
-                    <Link to="/login">
+                    <Link to="/registro">
                       Empieza gratis
                       <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
                     </Link>
@@ -611,7 +611,7 @@ function Landing() {
                 </Link>
               </li>
               <li>
-                <Link to="/login" className="transition-colors hover:text-foreground">
+                <Link to="/registro" className="transition-colors hover:text-foreground">
                   Empieza gratis
                 </Link>
               </li>
