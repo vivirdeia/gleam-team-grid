@@ -61,6 +61,7 @@ export const EMPRESAS: Empresa[] = [
     plan: "pro",
     alta: "2025-09-01",
     activo: true,
+    pinAdmin: "1234",
   },
   {
     id: "em2",
@@ -70,6 +71,7 @@ export const EMPRESAS: Empresa[] = [
     plan: "starter",
     alta: "2025-12-14",
     activo: true,
+    pinAdmin: "2345",
   },
   {
     id: "em3",
@@ -79,6 +81,7 @@ export const EMPRESAS: Empresa[] = [
     plan: "prueba",
     alta: "2026-08-11",
     activo: true,
+    pinAdmin: "3456",
   },
 ];
 
