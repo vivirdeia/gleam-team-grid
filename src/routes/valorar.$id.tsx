@@ -37,20 +37,15 @@ function ValorarPage() {
 
   function enviar() {
     if (!servicio || servicio.valoracion) return;
+    const texto = comentario.trim();
+    const valoracion = {
+      puntuacion,
+      ...(texto ? { comentario: texto } : {}),
+      fecha: new Date().toISOString().slice(0, 10),
+    };
     setDB((prev) => ({
       ...prev,
-      servicios: prev.servicios.map((s) =>
-        s.id === id
-          ? {
-              ...s,
-              valoracion: {
-                puntuacion,
-                comentario: comentario.trim() || undefined,
-                fecha: new Date().toISOString().slice(0, 10),
-              },
-            }
-          : s,
-      ),
+      servicios: prev.servicios.map((s) => (s.id === id ? { ...s, valoracion } : s)),
     }));
   }
 
